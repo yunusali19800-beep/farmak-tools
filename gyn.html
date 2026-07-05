@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#DE5C0C">
+<title>Гемостаз в гинекологии · Farmak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A2333; --ink-soft:#55607A; --mute:#8A93A8;
+  --paper:#EEF1F7; --card:#FFFFFF; --line:#DDE3EE; --line-soft:#EAEEF5;
+  --navy:#1A2E5A;
+  /* Фленокс — оранжевый/красный/волна */
+  --fx:#DE5C0C; --fx-deep:#CE3B14; --fx-tint:#FCEBDD; --fx-wave:#B87CAD;
+  /* Гемотран — бордо/кармин */
+  --gm:#A5231B; --gm-deep:#7E140E; --gm-tint:#F7E1DE;
+  --ok:#1FA463; --ok-tint:#E1F3EA;
+  --warn:#C0801A; --warn-tint:#F7ECD6;
+  --display:'Spectral',Georgia,serif;
+  --ui:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --r:18px; --r-sm:12px;
+  --sh:0 1px 2px rgba(26,35,51,.05),0 10px 30px rgba(26,35,51,.09);
+  --sh-lg:0 6px 16px rgba(26,35,51,.10),0 20px 50px rgba(26,35,51,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:var(--ui);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;line-height:1.45;overscroll-behavior-y:none}
+.app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;display:flex;flex-direction:column;background:var(--paper)}
+.hidden{display:none!important}
+
+/* ---------- HCP GATE ---------- */
+.gate{position:fixed;inset:0;z-index:100;background:linear-gradient(160deg,#1A2E5A,#2A1440 70%);display:flex;align-items:center;justify-content:center;padding:26px}
+.gate-inner{max-width:400px;text-align:center;color:#fff}
+.gate .glyph{width:58px;height:58px;margin:0 auto 20px;border-radius:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);display:grid;place-items:center}
+.gate h2{font-family:var(--display);font-weight:600;font-size:24px;margin:0 0 10px}
+.gate p{font-size:13.5px;color:rgba(255,255,255,.8);margin:0 0 26px;line-height:1.5}
+.gate .gbtns{display:flex;flex-direction:column;gap:11px}
+.gate button{border:none;border-radius:13px;padding:15px;font-family:var(--ui);font-size:15px;font-weight:700;cursor:pointer}
+.gate .yes{background:var(--fx);color:#fff}
+.gate .no{background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.25);font-weight:600}
+.gate .fine{font-size:11px;color:rgba(255,255,255,.5);margin-top:20px;line-height:1.5}
+.gate-block{display:none}
+
+/* ---------- HEADER ---------- */
+.top{position:sticky;top:0;z-index:20;background:rgba(238,241,247,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:12px 18px 11px}
+.brandrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mark{display:flex;align-items:center;gap:10px;min-width:0}
+.mono-badge{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--fx-deep);background:var(--fx-tint);padding:4px 8px;border-radius:7px;white-space:nowrap}
+.mono-badge.gm{color:var(--gm-deep);background:var(--gm-tint)}
+.wordmark{font-family:var(--display);font-weight:700;font-size:16px;color:var(--navy);letter-spacing:.2px;line-height:1.05}
+.wordmark small{display:block;font-family:var(--ui);font-size:9.5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--mute)}
+.iinfo{border:1px solid var(--line);background:var(--card);color:var(--navy);width:32px;height:32px;border-radius:10px;font-weight:700;font-size:15px;display:grid;place-items:center;cursor:pointer;flex:0 0 auto}
+.steps{display:flex;gap:5px;margin-top:11px}
+.steps i{height:3px;flex:1;border-radius:3px;background:var(--line);transition:background .3s}
+.steps i.on{background:var(--fx)} .steps i.done{background:var(--fx-deep)}
+.steps.gm i.on{background:var(--gm)} .steps.gm i.done{background:var(--gm-deep)}
+
+.screen{flex:1;padding:18px 18px 130px;animation:fade .32s ease}
+@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;margin:2px 0 8px;color:var(--fx)}
+.eyebrow.gm{color:var(--gm)} .eyebrow.navy{color:var(--navy)}
+h1.title{font-family:var(--display);font-weight:600;font-size:25px;line-height:1.16;margin:0 0 7px;letter-spacing:-.2px;color:var(--ink)}
+.lead{font-size:13.5px;color:var(--ink-soft);margin:0 0 18px}
+
+/* ---------- HUB (развилка) ---------- */
+.frame-band{background:linear-gradient(135deg,#fff,#FBF6F2);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;margin-bottom:20px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.frame-band:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,var(--fx),var(--gm))}
+.frame-band h3{margin:0 0 5px;font-size:14px;font-weight:800;color:var(--navy);padding-left:6px}
+.frame-band p{margin:0;font-size:12.5px;color:var(--ink-soft);padding-left:6px;line-height:1.5}
+.axis{display:flex;align-items:center;gap:8px;margin:13px 4px 2px}
+.axis .pole{flex:1;text-align:center;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:7px 4px;border-radius:9px}
+.axis .pole.t{color:var(--fx-deep);background:var(--fx-tint)}
+.axis .pole.b{color:var(--gm-deep);background:var(--gm-tint)}
+.axis .vs{font-family:var(--mono);font-size:11px;color:var(--mute);font-weight:700}
+
+.pick{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:var(--r);padding:18px 16px;margin-bottom:13px;cursor:pointer;box-shadow:var(--sh);transition:transform .12s,box-shadow .18s,border-color .15s;position:relative;overflow:hidden}
+.pick:active{transform:scale(.988)}
+.pick .acc{position:absolute;left:0;top:0;bottom:0;width:5px}
+.pick.t .acc{background:linear-gradient(180deg,var(--fx),var(--fx-deep))}
+.pick.b .acc{background:linear-gradient(180deg,var(--gm),var(--gm-deep))}
+.pick .pico{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;margin-bottom:11px}
+.pick.t .pico{background:var(--fx-tint)} .pick.b .pico{background:var(--gm-tint)}
+.pick h3{margin:0 0 3px;font-size:17.5px;font-weight:800;color:var(--ink)}
+.pick .sub{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+.pick .tag{display:inline-block;margin-top:11px;font-family:var(--mono);font-size:10.5px;font-weight:700;padding:4px 9px;border-radius:7px;letter-spacing:.3px}
+.pick.t .tag{color:var(--fx-deep);background:var(--fx-tint)}
+.pick.b .tag{color:var(--gm-deep);background:var(--gm-tint)}
+.pick .arr{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:26px;color:var(--line)}
+
+.backrow{display:flex;align-items:center;margin:-2px 0 10px}
+.backrow button{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--ink-soft);font-size:13px;font-weight:600;cursor:pointer;padding:5px 0;font-family:var(--ui)}
+
+/* ---------- LIVE SCALE (mini, factors screen) ---------- */
+.scale-live{background:linear-gradient(180deg,#fff,#FBF7F3);border:1px solid var(--line);border-radius:var(--r);padding:12px 10px 6px;margin-bottom:18px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.scale-live .sl-head{display:flex;justify-content:space-between;padding:0 8px 4px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.scale-live .sl-head .l{color:var(--gm)} .scale-live .sl-head .r{color:var(--navy)}
+.slsvg{width:100%;height:170px;display:block}
+.slsvg svg{width:100%;height:100%;display:block}
+
+/* ---------- CHIPS ---------- */
+.group{margin-bottom:16px}
+.group-h{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 9px}
+.group-h b{font-size:12.5px;font-weight:800;color:var(--navy);letter-spacing:.2px}
+.group-h span{font-size:11px;color:var(--mute);font-family:var(--mono)}
+.chip{display:flex;align-items:center;gap:11px;width:100%;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:border-color .14s,background .14s;text-align:left}
+.chip:active{background:#FAFBFD}
+.chip.sel{border-color:var(--fx);background:var(--fx-tint)}
+.chip .box{width:22px;height:22px;flex:0 0 auto;border:2px solid var(--line);border-radius:7px;display:grid;place-items:center;transition:all .14s}
+.chip.sel .box{background:var(--fx);border-color:var(--fx)}
+.chip .box svg{width:13px;height:13px;opacity:0;transition:opacity .14s}
+.chip.sel .box svg{opacity:1}
+.chip .lbl{flex:1;font-size:13.5px;font-weight:500}
+.chip .pts{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--mute)}
+.chip.sel .pts{color:var(--fx-deep)}
+
+/* renal */
+.field{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:11px 14px;margin-bottom:9px}
+.field label{font-size:13.5px;font-weight:500}
+.field .inwrap{display:flex;align-items:center;gap:6px}
+.field input{width:78px;font-family:var(--mono);font-size:15px;font-weight:600;text-align:right;border:none;border-bottom:2px solid var(--line);background:transparent;padding:3px 2px;color:var(--ink);outline:none}
+.field input:focus{border-color:var(--fx)}
+.field .unit{font-size:11px;color:var(--mute);width:46px}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:2px 0 9px}
+.seg button{flex:1;border:none;background:var(--card);padding:9px;font-size:12px;font-weight:700;color:var(--ink-soft);cursor:pointer;font-family:var(--ui)}
+.seg button.on{background:var(--fx-deep);color:#fff}
+.crcl-out{font-family:var(--mono);font-size:12px;color:var(--ink-soft);text-align:right;margin:-2px 6px 4px}
+.crcl-out b{color:var(--ink)}
+
+/* ---------- footer bar ---------- */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:30;max-width:480px;margin:0 auto;padding:12px 18px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(238,241,247,0),rgba(238,241,247,.96) 30%)}
+.scorebar{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:9px 9px 9px 16px;box-shadow:var(--sh-lg)}
+.scorebar .live{display:flex;flex-direction:column;line-height:1.05}
+.scorebar .live small{font-size:9.5px;color:var(--mute);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.scorebar .live span{font-family:var(--mono);font-size:20px;font-weight:700}
+.btn{border:none;border-radius:12px;padding:13px 20px;font-family:var(--ui);font-size:14.5px;font-weight:800;cursor:pointer;letter-spacing:.2px}
+.btn-fx{background:var(--fx);color:#fff} .btn-fx:active{background:var(--fx-deep)}
+.btn-gm{background:var(--gm);color:#fff} .btn-gm:active{background:var(--gm-deep)}
+.btn-ghost{background:transparent;color:var(--ink-soft);font-weight:700;padding:12px 4px;border:none;cursor:pointer;font-size:13.5px}
+.btn-block{width:100%;border:none;border-radius:13px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--ui)}
+
+/* ---------- RESULT ---------- */
+.verdict{border-radius:var(--r);padding:17px 18px;margin-bottom:16px;border:1px solid;box-shadow:var(--sh)}
+.verdict .vk{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;opacity:.9}
+.verdict .vt{font-family:var(--display);font-size:21px;font-weight:600;line-height:1.22;margin:0}
+.v-go{background:var(--ok-tint);border-color:#B7E2CC;color:#15613E} .v-go .vk{color:var(--ok)}
+.v-low{background:#EEF1F7;border-color:var(--line);color:#3D4A63}
+.v-caution{background:var(--warn-tint);border-color:#E7D2A2;color:#7A5410} .v-caution .vk{color:var(--warn)}
+.v-hot{background:var(--gm-tint);border-color:#E7B7B1;color:var(--gm-deep)} .v-hot .vk{color:var(--gm)}
+
+.bigscale{background:linear-gradient(180deg,#fff,#FAF6F2);border:1px solid var(--line);border-radius:var(--r);padding:14px 12px 8px;margin-bottom:16px;box-shadow:var(--sh);overflow:hidden}
+.bigscale .bh{display:flex;justify-content:space-between;padding:0 8px 4px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.bigscale .bh .l{color:var(--gm)} .bigscale .bh .r{color:var(--navy)}
+.bssvg{width:100%;height:216px;display:block}
+.bssvg svg{width:100%;height:100%;display:block}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:16px}
+.stat{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:13px;box-shadow:var(--sh)}
+.stat small{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--mute)}
+.stat .big{font-family:var(--mono);font-size:23px;font-weight:700;margin:3px 0 1px}
+.stat .cat{font-size:12px;font-weight:700}
+.stat.clot .big{color:var(--gm)} .stat.thr .big{color:var(--navy)}
+
+.flag{display:flex;gap:10px;align-items:flex-start;border:1px solid #E7D2A2;background:var(--warn-tint);border-radius:13px;padding:12px 14px;margin-bottom:15px;font-size:12.5px;color:#7A5410;line-height:1.45}
+.flag svg{flex:0 0 auto;margin-top:1px}
+.flag.info{border-color:#B9C9E6;background:#EAF0FA;color:#1c3a63}
+
+.decision{border:1px solid var(--fx);background:linear-gradient(180deg,var(--fx-tint),#fff);border-radius:var(--r);padding:17px 16px;margin-bottom:14px;box-shadow:var(--sh-lg)}
+.decision.gm{border-color:var(--gm);background:linear-gradient(180deg,var(--gm-tint),#fff)}
+.decision .dk{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--fx-deep);margin-bottom:7px}
+.decision.gm .dk{color:var(--gm-deep)}
+.decision .brandname{font-family:var(--display);font-size:24px;font-weight:700;color:var(--fx-deep);line-height:1}
+.decision.gm .brandname{color:var(--gm-deep)}
+.decision .brandsub{font-size:11.5px;color:var(--ink-soft);margin-top:3px}
+.dose{margin-top:13px;border-top:1px dashed var(--line);padding-top:11px}
+.dose-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:5px 0;gap:10px}
+.dose-row .k{color:var(--ink-soft)} .dose-row .v{font-family:var(--mono);font-weight:700;text-align:right}
+.dose-row.hl{background:var(--ok-tint);margin:3px -8px;padding:8px;border-radius:9px}
+.dose-row.hl .v{color:#15613E}
+.dose-row.dim .k,.dose-row.dim .v{color:var(--mute)}
+.note-mini{font-size:11px;color:var(--mute);margin-top:10px;line-height:1.45}
+
+/* Gemotran protocol */
+.window{border-radius:var(--r);padding:16px;margin-bottom:15px;text-align:center;border:1px solid;box-shadow:var(--sh)}
+.window.good{background:var(--gm-tint);border-color:#E7B7B1}
+.window.late{background:var(--warn-tint);border-color:#E7D2A2}
+.window .wbig{font-family:var(--mono);font-size:38px;font-weight:700;line-height:1;color:var(--gm-deep)}
+.window.late .wbig{color:#7A5410}
+.window .wsub{font-size:12.5px;font-weight:600;margin-top:6px;color:var(--ink-soft)}
+.steps4{display:grid;grid-template-columns:1fr;gap:9px;margin-bottom:15px}
+.st4{display:flex;align-items:center;gap:13px;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:12px 14px;box-shadow:var(--sh)}
+.st4 .n{width:30px;height:30px;flex:0 0 auto;border-radius:50%;background:var(--gm);color:#fff;font-family:var(--mono);font-weight:700;font-size:14px;display:grid;place-items:center}
+.st4 .sx{font-size:13.5px;font-weight:600} .st4 .sx small{display:block;font-weight:500;color:var(--ink-soft);font-size:11.5px;margin-top:1px}
+.dosebox{background:var(--gm);color:#fff;border-radius:var(--r);padding:16px;text-align:center;margin-bottom:15px;box-shadow:var(--sh-lg)}
+.dosebox .amp{font-family:var(--mono);font-size:15px;font-weight:600;opacity:.9}
+.dosebox .eq{font-family:var(--display);font-size:26px;font-weight:700;margin:4px 0 2px}
+.dosebox .fx{font-size:11.5px;opacity:.85}
+
+.share-row{display:flex;gap:10px;margin:4px 0 8px}
+.share-row button{flex:1;border-radius:13px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--ui);border:1px solid var(--line);background:var(--card);color:var(--navy);display:flex;align-items:center;justify-content:center;gap:8px}
+.share-row button.prim{background:var(--navy);color:#fff;border-color:var(--navy)}
+.share-row button svg{width:17px;height:17px}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:12.5px;font-weight:600;padding:10px 16px;border-radius:11px;opacity:0;transition:opacity .25s;z-index:50;pointer-events:none}
+.toast.show{opacity:1}
+
+.disc{font-size:10.5px;color:var(--mute);line-height:1.5;border-top:1px solid var(--line);padding-top:12px;margin-top:8px}
+.disc a{color:var(--fx-deep);font-weight:600;text-decoration:none;border-bottom:1px solid rgba(184,72,10,.35)}
+.disc.gm a{color:var(--gm-deep);border-color:rgba(126,20,14,.35)}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:60;background:rgba(26,35,51,.55);display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.sheet{background:var(--card);max-width:480px;width:100%;border-radius:20px 20px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom));max-height:84vh;overflow:auto;animation:up .3s ease}
+@keyframes up{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
+.sheet h4{font-family:var(--display);font-size:19px;margin:0 0 11px;color:var(--navy)}
+.sheet p{font-size:12.5px;color:var(--ink-soft);margin:0 0 10px}
+.sheet ul{margin:0 0 10px;padding-left:18px;font-size:12.5px;color:var(--ink-soft)}
+.sheet .close{width:100%;margin-top:6px;background:var(--navy);color:#fff;border:none;border-radius:12px;padding:13px;font-weight:800;font-size:14px;cursor:pointer;font-family:var(--ui)}
+.src{font-family:var(--mono);font-size:10.5px;color:var(--mute);margin-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HCP GATE -->
+  <div class="gate" id="gate">
+    <div class="gate-inner">
+      <div class="glyph">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 8v6M9 11h6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <h2>Инструмент для медицинских работников</h2>
+      <p>Материал содержит информацию о рецептурных препаратах и предназначен только для специалистов здравоохранения.</p>
+      <div class="gbtns">
+        <button class="yes" onclick="passGate()">Да, я медицинский работник</button>
+        <button class="no" onclick="denyGate()">Нет</button>
+      </div>
+      <div class="gate-block" id="gblock">
+        <p style="margin-top:22px;color:rgba(255,255,255,.85)">Доступ к материалу возможен только для медицинских работников.</p>
+      </div>
+      <div class="fine">Инструмент поддержки клинического решения. Не заменяет клиническое суждение врача, инструкцию препарата и действующие рекомендации.</div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="top hidden" id="top">
+    <div class="brandrow">
+      <div class="mark">
+        <span class="mono-badge" id="hbadge">ГЕМОСТАЗ</span>
+        <div class="wordmark">Гинекология<small id="hsub">два полюса гемостаза</small></div>
+      </div>
+      <button class="iinfo" onclick="openModal()">i</button>
+    </div>
+    <div class="steps" id="steps"><i id="s0"></i><i id="s1"></i><i id="s2"></i></div>
+  </div>
+
+  <!-- HUB -->
+  <div class="screen hidden" id="scr-hub">
+    <div class="eyebrow navy">Периоперационная пациентка</div>
+    <h1 class="title">Между двумя угрозами гемостаза</h1>
+    <div class="frame-band">
+      <h3>Одна пациентка — два риска</h3>
+      <p>После операции в гинекологии система гемостаза может дать сбой в двух противоположных направлениях. Оба требуют решения врача.</p>
+      <div class="axis">
+        <span class="pole b">◀ Кровотечение</span>
+        <span class="vs">гемостаз</span>
+        <span class="pole t">Тромбоз ▶</span>
+      </div>
+    </div>
+
+    <button class="pick t" onclick="goTrack('fx')">
+      <span class="acc"></span>
+      <div class="pico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3v4M5 9h14M6 9l1 8a2 2 0 002 2h6a2 2 0 002-2l1-8" stroke="#CE3B14" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <h3>Профилактика тромбоза</h3>
+      <p class="sub">Оценка риска ВТЭ после операции / кесарева и решение о профилактике</p>
+      <span class="tag">ВЕСЫ · Фленокс 4000</span>
+      <span class="arr">›</span>
+    </button>
+
+    <button class="pick b" onclick="goTrack('gm')">
+      <span class="acc"></span>
+      <div class="pico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3s6 6 6 11a6 6 0 01-12 0c0-5 6-11 6-11z" stroke="#7E140E" stroke-width="1.9" stroke-linejoin="round"/></svg></div>
+      <h3>Контроль кровотечения</h3>
+      <p class="sub">Протокол при послеродовом кровотечении — окно первых 3 часов</p>
+      <span class="tag">ПРОТОКОЛ · Гемотран</span>
+      <span class="arr">›</span>
+    </button>
+
+    <p class="disc">Инструмент поддержки клинического решения. Не заменяет суждение врача, инструкцию препарата и действующие клинические рекомендации. При поддержке Farmak.</p>
+  </div>
+
+  <!-- FLENOX: FACTORS -->
+  <div class="screen hidden" id="scr-fx-fx">
+    <div class="backrow"><button onclick="goHub()">‹ к выбору</button></div>
+    <div class="eyebrow">Шаг 1 · Оценка риска ВТЭ</div>
+    <h1 class="title">Факторы тромбогенного риска</h1>
+    <p class="lead">Отметьте факторы у пациентки после операции / родоразрешения. Весы покажут баланс в реальном времени.</p>
+
+    <div class="scale-live">
+      <div class="sl-head"><span class="l">◀ Порог профилактики</span><span class="r">Риск ВТЭ ▶</span></div>
+      <div class="slsvg" id="live-svg"></div>
+    </div>
+
+    <div id="fx-factors"></div>
+
+    <div class="group" style="margin-top:6px">
+      <div class="group-h"><b>Почечная функция</b><span>Кокрофт–Голт</span></div>
+      <div class="field"><label>Возраст</label><div class="inwrap"><input id="r-age" inputmode="numeric" placeholder="—" oninput="updCrcl()"><span class="unit">лет</span></div></div>
+      <div class="field"><label>Масса тела</label><div class="inwrap"><input id="r-wt" inputmode="numeric" placeholder="—" oninput="updCrcl();liveScale()"><span class="unit">кг</span></div></div>
+      <div class="field"><label>Креатинин</label><div class="inwrap"><input id="r-cr" inputmode="decimal" placeholder="—" oninput="updCrcl()"><span class="unit" id="cr-unit">мкмоль/л</span></div></div>
+      <div class="seg"><button id="u-umol" class="on" onclick="setUnit('umol')">мкмоль/л</button><button id="u-mgdl" onclick="setUnit('mgdl')">мг/дл</button></div>
+      <div class="crcl-out" id="crcl-out">Клиренс креатинина рассчитается автоматически</div>
+    </div>
+  </div>
+
+  <!-- FLENOX: RESULT -->
+  <div class="screen hidden" id="scr-fx-res">
+    <div class="backrow"><button onclick="goFxFactors()">‹ изменить факторы</button></div>
+    <div id="fx-res-body"></div>
+  </div>
+
+  <!-- GEMOTRAN: PROTOCOL -->
+  <div class="screen hidden" id="scr-gm">
+    <div class="backrow"><button onclick="goHub()">‹ к выбору</button></div>
+    <div id="gm-body"></div>
+  </div>
+
+  <!-- footer bar -->
+  <div class="bar hidden" id="bar">
+    <div class="scorebar">
+      <div class="live"><small id="bar-label">Баллы риска</small><span id="bar-score">0</span></div>
+      <button class="btn btn-fx" onclick="goFxResult()">Показать решение ›</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Скопировано</div>
+
+<!-- modal -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+/* ================= UTIL ================= */
+const $=id=>document.getElementById(id);
+const CHECK='<svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function show(id){['scr-hub','scr-fx-fx','scr-fx-res','scr-gm'].forEach(s=>$(s).classList.add('hidden'));$(id).classList.remove('hidden');window.scrollTo(0,0);}
+function setSteps(n,gm){const s=$('steps');s.className='steps'+(gm?' gm':'');['s0','s1','s2'].forEach((id,i)=>{const e=$(id);e.className=i<n?'done':(i===n?'on':'');});}
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1600);}
+
+/* ================= GATE ================= */
+function passGate(){$('gate').classList.add('hidden');$('top').classList.remove('hidden');route();}
+function denyGate(){$('gblock').style.display='block';}
+
+/* deep-link: #tromboz / #krovotechenie */
+function route(){
+  const h=(location.hash||'').toLowerCase();
+  if(h.indexOf('tromb')>=0||h.indexOf('fx')>=0||h.indexOf('vte')>=0){goTrack('fx');}
+  else if(h.indexOf('krov')>=0||h.indexOf('gm')>=0||h.indexOf('bleed')>=0){goTrack('gm');}
+  else goHub();
+}
+
+/* ================= STATE ================= */
+let sel={}, renal={age:'',wt:'',cr:'',unit:'umol'};
+
+/* ================= NAV ================= */
+function goHub(){show('scr-hub');$('bar').classList.add('hidden');$('hbadge').textContent='ГЕМОСТАЗ';$('hbadge').className='mono-badge';$('hsub').textContent='два полюса гемостаза';setSteps(-1);}
+function goTrack(t){ if(t==='fx'){$('hbadge').textContent='ФЛЕНОКС';$('hbadge').className='mono-badge';$('hsub').textContent='профилактика тромбоза';goFxFactors();} else {$('hbadge').textContent='ГЕМОТРАН';$('hbadge').className='mono-badge gm';$('hsub').textContent='контроль кровотечения';goGm();} }
+
+/* ================= FLENOX FACTORS ================= */
+const FX_FACTORS=[
+  {h:'Операция и роды', items:[
+    ['Кесарево сечение',2],['Экстренное КС / в родах',2],['Операция в послеродовом периоде',2],
+    ['Оперативные / инструментальные роды',1],['Онкогинекологическая операция',3],
+  ]},
+  {h:'Пациентка', items:[
+    ['Сниженная подвижность / постельный режим',3],['ВТЭ в анамнезе',3],['Тромбофилия',3],
+    ['Ожирение (ИМТ ≥ 30)',1],['Возраст > 35 лет',1],['Варикозная болезнь',1],['Паритет ≥ 3',1],
+  ]},
+  {h:'Течение и коморбидность', items:[
+    ['Госпитализация ≥ 3 дней',2],['Преэклампсия',1],['Многоплодие / ВРТ',1],
+    ['Кровопотеря > 1 л / гемотрансфузия',1],['Системная инфекция',1],
+    ['Медицинская коморбидность (онко, СКВ, ВЗК)',3],['Гормональная терапия',1],
+  ]},
+];
+function buildFxFactors(){
+  let h='';
+  FX_FACTORS.forEach((g,gi)=>{
+    h+=`<div class="group"><div class="group-h"><b>${g.h}</b></div>`;
+    g.items.forEach((it,ii)=>{
+      const k=gi+'_'+ii, on=sel[k]!==undefined;
+      h+=`<button class="chip ${on?'sel':''}" onclick="tog(${gi},${ii},${it[1]})">
+        <span class="box">${CHECK}</span><span class="lbl">${it[0]}</span><span class="pts">+${it[1]}</span></button>`;
+    });
+    h+='</div>';
+  });
+  $('fx-factors').innerHTML=h;
+}
+function tog(gi,ii,pts){const k=gi+'_'+ii; if(sel[k]!==undefined)delete sel[k]; else sel[k]=pts; buildFxFactors(); updBar(); liveScale();}
+function fxScore(){let s=0;for(const k in sel)s+=sel[k];return s;}
+function updBar(){$('bar-label').textContent='Баллы риска ВТЭ';$('bar-score').textContent=fxScore();}
+
+function goFxFactors(){show('scr-fx-fx');setSteps(1);$('bar').classList.remove('hidden');$('bar').querySelector('button').className='btn btn-fx';$('bar').querySelector('button').setAttribute('onclick','goFxResult()');buildFxFactors();updBar();liveScale();}
+
+/* renal Cockcroft-Gault (female) */
+function crcl(){
+  const a=parseFloat(renal.age),w=parseFloat(renal.wt);let cr=parseFloat(renal.cr);
+  if(!a||!w||!cr)return null;
+  if(renal.unit==='umol')cr=cr/88.4; // to mg/dL
+  if(cr<=0)return null;
+  return Math.round(((140-a)*w*0.85)/(72*cr));
+}
+function updCrcl(){
+  renal.age=$('r-age').value;renal.wt=$('r-wt').value;renal.cr=$('r-cr').value;
+  const o=$('crcl-out'),v=crcl();
+  if(v===null){o.innerHTML='Клиренс креатинина рассчитается автоматически';return;}
+  let tag=v<30?' · <b style="color:var(--gm)">снижен — осторожно</b>':(v<60?' · умеренно снижен':' · норма');
+  o.innerHTML=`Клиренс креатинина: <b>${v}</b> мл/мин${tag}`;
+}
+function setUnit(u){renal.unit=u;$('u-umol').className=u==='umol'?'on':'';$('u-mgdl').className=u==='mgdl'?'on':'';$('cr-unit').textContent=u==='umol'?'мкмоль/л':'мг/дл';updCrcl();}
+
+/* ============ SCALE RENDERING ============ */
+/* theme: 'fx' (Фленокс — оранж/красный/волна) | 'gm' (Гемотран — бордо)
+   score/threshold — числа для правой/левой чаши (score = динамика, threshold = точка отсчёта — ВСЕГДА статична)
+   rightLabel/leftLabel — подписи под чашами. beamId — уникальный id вращаемой группы (важно при 2+ SVG в DOM одновременно) */
+function beamSVG(score,threshold,mini,theme,leftLabel,rightLabel,beamId){
+  theme=theme||'fx';
+  const isFx=theme==='fx';
+  // палитра темы: Фленокс — оранж #DE5C0C + красный #CE3B14 + волна #B87CAD; Гемотран — бордо #A5231B/#7E140E
+  const barA=isFx?'#F08A3C':'#D94A5C', barB=isFx?'#DE5C0C':'#A5231B', barC=isFx?'#CE3B14':'#7E140E';
+  const colA=isFx?'#DE5C0C':'#A5231B', colB=isFx?'#8f3908':'#5C0F0A';
+  const riskFillA=isFx?'#F6DCD8':'#F3D6D3', riskFillB=isFx?'#E3A79C':'#DDA6A0', riskStroke=isFx?'#CE3B14':'#7E140E', riskText=isFx?'#B8351C':'#7E140E';
+  const wave=isFx?'#B87CAD':'transparent';
+  const uid=beamId||(mini?'live':'res')+'-'+theme;
+
+  // diff>0 => правая (динамика) чаша тяжелее => наклон вправо
+  const diff=score-threshold;
+  const span=Math.max(threshold,score,1);
+  const d=Math.max(-1,Math.min(1,diff/Math.max(span*0.6,1)));
+  const ang=(d*9).toFixed(2);
+
+  // геометрия с запасом по высоте — база НЕ обрезается ни в mini, ни в full варианте
+  const VBW=300, VBH=mini?176:222;
+  const cy0=mini?36:46;                 // высота коромысла
+  const rd=mini?18:23;                  // радиус чаши
+  const discY=mini?96:122;              // центр чаши по Y
+  const fs=mini?14:17;
+  const standTop=cy0+6, standBottom=mini?146:186, standH=standBottom-standTop;
+  const baseTop=standBottom, baseBottom=baseTop+(mini?14:18);
+  const lblY=discY+rd+(mini?15:17);
+
+  const pan=(cx,val,lbl,tone)=>{
+    const fill=tone==='risk'?`url(#gRisk-${uid})`:`url(#gThr-${uid})`;
+    const stroke=tone==='risk'?riskStroke:'#3D4A63';
+    const tcol=tone==='risk'?riskText:'#26324D';
+    return `<line x1="${cx-9}" y1="${cy0+4}" x2="${cx-4}" y2="${discY-rd}" stroke="#B9AFA3" stroke-width="1.6"/>
+      <line x1="${cx+9}" y1="${cy0+4}" x2="${cx+4}" y2="${discY-rd}" stroke="#B9AFA3" stroke-width="1.6"/>
+      <circle cx="${cx}" cy="${discY}" r="${rd}" fill="${fill}" stroke="${stroke}" stroke-width="2.4"/>
+      <text x="${cx}" y="${discY+fs*0.34}" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="${fs}" font-weight="700" fill="${tcol}">${val}</text>
+      <text x="${cx}" y="${lblY}" text-anchor="middle" font-family="'Inter',sans-serif" font-size="10" font-weight="700" fill="#55607A">${lbl}</text>`;
+  };
+
+  return `<svg viewBox="0 0 ${VBW} ${VBH}" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="beamG-${uid}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${barA}"/><stop offset=".5" stop-color="${barB}"/><stop offset="1" stop-color="${barC}"/></linearGradient>
+    <linearGradient id="colG-${uid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${colA}"/><stop offset="1" stop-color="${colB}"/></linearGradient>
+    <radialGradient id="gRisk-${uid}" cx=".38" cy=".33" r=".85"><stop offset="0" stop-color="${riskFillA}"/><stop offset="1" stop-color="${riskFillB}"/></radialGradient>
+    <radialGradient id="gThr-${uid}" cx=".38" cy=".33" r=".85"><stop offset="0" stop-color="#EDF0F6"/><stop offset="1" stop-color="#CFD8E8"/></radialGradient>
+  </defs>
+  ${isFx?`<path d="M20 ${baseBottom-4} Q 80 ${baseBottom-16}, 150 ${baseBottom-4} T 280 ${baseBottom-4}" fill="none" stroke="${wave}" stroke-width="4" stroke-linecap="round" opacity="0.32"/>`:''}
+  <rect x="146" y="${standTop}" width="8" height="${standH}" rx="3" fill="url(#colG-${uid})" stroke="${colB}" stroke-width="1"/>
+  <path d="M${120} ${baseTop} L${180} ${baseTop} L${194} ${baseBottom} L${106} ${baseBottom} Z" fill="url(#colG-${uid})" stroke="${colB}" stroke-width="1"/>
+  <g id="${uid}-beam" style="transform:rotate(0deg);transform-origin:150px ${cy0}px;transition:transform 1.05s cubic-bezier(.34,1.4,.5,1)" data-t="rotate(${ang}deg)">
+    <rect x="56" y="${cy0-4}" width="188" height="8" rx="4" fill="url(#beamG-${uid})" stroke="${colB}" stroke-width="1"/>
+    <circle cx="150" cy="${cy0}" r="9" fill="${colA}" stroke="${colB}" stroke-width="1.5"/><circle cx="150" cy="${cy0}" r="3.2" fill="#FCEBDD"/>
+    ${pan(72, threshold, leftLabel, 'thr')}
+    ${pan(228, score, rightLabel, 'risk')}
+  </g></svg>`;
+}
+function liveScale(){
+  const s=fxScore();
+  $('live-svg').innerHTML=beamSVG(s,4,true,'fx','Порог','Риск ВТЭ','live-fx');
+  requestAnimationFrame(()=>{const b=$('live-fx-beam');if(b)b.style.transform=b.dataset.t;});
+}
+
+/* ============ FLENOX RESULT ============ */
+function fxTier(s){
+  if(s>=5)return{k:'высокий',lvl:3};
+  if(s>=4)return{k:'промежуточный',lvl:2};
+  if(s>=2)return{k:'низкий-промежуточный',lvl:1};
+  return{k:'низкий',lvl:0};
+}
+const FX_DOSE=[
+  ['< 50 кг','20 мг · 1 р/сут',false],
+  ['50–90 кг','40 мг · 1 р/сут  — Фленокс 4000',true],
+  ['91–130 кг','60 мг — иная весовая категория',false],
+  ['> 130 кг','по массе / протоколу',false],
+];
+function goFxResult(){show('scr-fx-res');setSteps(3);$('bar').classList.add('hidden');$('fx-res-body').innerHTML=fxResult();requestAnimationFrame(()=>{const b=$('res-fx-beam');if(b)b.style.transform=b.dataset.t;});}
+function fxResult(){
+  const s=fxScore(),t=fxTier(s),v=crcl();
+  const hasCesar=sel['0_0']!==undefined||sel['0_1']!==undefined;
+  let verdict,vclass,duration='';
+  if(t.lvl>=3){verdict='Фармакопрофилактика показана';vclass='v-go';duration='≥ 6 недель после родоразрешения';}
+  else if(t.lvl>=2){verdict='Фармакопрофилактика показана';vclass='v-go';duration='≥ 10 дней после родоразрешения';}
+  else if(t.lvl>=1&&hasCesar){verdict='Рассмотреть фармакопрофилактику';vclass='v-caution';duration='≥ 10 дней (по группе риска)';}
+  else{verdict='Ранняя мобилизация; фармакопрофилактика обычно не требуется';vclass='v-low';}
+  const go=vclass==='v-go'||vclass==='v-caution';
+
+  let h='';
+  h+=`<div class="verdict ${vclass}"><div class="vk">Решение · оценка риска ВТЭ</div><p class="vt">${verdict}</p></div>`;
+  h+=`<div class="bigscale"><div class="bh"><span class="l">◀ Порог</span><span class="r">Риск ВТЭ ▶</span></div><div class="bssvg">${beamSVG(s,4,false,'fx','Порог','Риск ВТЭ','res-fx')}</div></div>`;
+  h+=`<div class="stats">
+    <div class="stat clot"><small>Баллы риска</small><div class="big">${s}</div><div class="cat" style="color:var(--gm)">${t.k} риск</div></div>
+    <div class="stat thr"><small>Порог профилактики</small><div class="big">4</div><div class="cat" style="color:var(--navy)">по шкале риска</div></div>
+  </div>`;
+
+  if(v!==null&&v<30){
+    h+=`<div class="flag">${warnIco()}<div><b>Клиренс креатинина ${v} мл/мин.</b> При выраженном снижении функции почек профилактическая доза эноксапарина требует осторожности и коррекции — сверьтесь с инструкцией и локальным протоколом.</div></div>`;
+  }
+
+  if(go){
+    let bands=FX_DOSE.map(b=>`<div class="dose-row ${b[2]?'hl':'dim'}"><span class="k">${b[0]}</span><span class="v">${b[1]}</span></div>`).join('');
+    h+=`<div class="decision">
+      <div class="dk">Инструмент в точке решения</div>
+      <div class="brandname">Фленокс 4000</div>
+      <div class="brandsub">эноксапарин · 4000 анти-Ха МЕ · профилактика ВТЭ · преднаполненный шприц</div>
+      <div class="dose">
+        <div class="dose-row"><span class="k">Старт</span><span class="v">через 4–8 ч после операции</span></div>
+        ${duration?`<div class="dose-row"><span class="k">Длительность</span><span class="v">${duration}</span></div>`:''}
+      </div>
+      <div class="dose" style="margin-top:6px">${bands}</div>
+      <div class="note-mini">Фленокс 4000 (40 мг) — стандартная весовая доза для 50–90 кг. Иные дозировки требуют весового / протокольного основания. При крайних значениях массы и сниженной функции почек — коррекция по инструкции.</div>
+    </div>`;
+    h+=`<div class="flag info">${clockIco()}<div><b>Нейроаксиальная анестезия.</b> ≥ 12 ч от профилактической дозы НМГ до блокады; возобновление ≥ 4 ч после удаления катетера.</div></div>`;
+    h+=`<div class="flag">${warnIco()}<div><b>При активном кровотечении</b> НМГ не стартовать до контроля гемостаза — механическая профилактика как временная опция.</div></div>`;
+  } else {
+    h+=`<div class="flag info">${clockIco()}<div>Низкий риск — ранняя активизация и механическая профилактика. Повторно оценить риск при изменении состояния или перед выпиской.</div></div>`;
+  }
+
+  const note=fxNote(s,t,verdict,duration,v);
+  h+=shareBlock(note,false);
+  h+=resetBtn('fx');
+  h+=`<p class="disc">Источники: <a href="https://pubmed.ncbi.nlm.nih.gov/33878456/" target="_blank" rel="noopener">SOGC Guideline No.417, PMID 33878456</a> · <a href="https://pubmed.ncbi.nlm.nih.gov/19917854/" target="_blank" rel="noopener">Padua Prediction Score, PMID 19917854</a> · RCOG Green-top Guideline 37a (2015, amend. 2023) · <a href="https://pubmed.ncbi.nlm.nih.gov/11919306/" target="_blank" rel="noopener">ENOXACAN II, PMID 11919306</a>. Инструмент поддержки клинического решения — не заменяет клиническое суждение, инструкцию препарата и клинические рекомендации. При поддержке Farmak.</p>`;
+  return h;
+}
+function fxNote(s,t,verdict,duration,v){
+  let n=`КЛИНИЧЕСКАЯ ЗАМЕТКА · Риск ВТЭ в оперативной гинекологии\n`;
+  n+=`Балл риска: ${s} (${t.k} риск; порог профилактики — 4).\n`;
+  n+=`Решение: ${verdict}.\n`;
+  if(duration)n+=`Длительность: ${duration}.\n`;
+  if(t.lvl>=1)n+=`Рассмотреть: Фленокс 4000 (эноксапарин 40 мг п/к 1 р/сут) для массы 50–90 кг; старт через 4–8 ч после операции.\n`;
+  if(v!==null)n+=`Клиренс креатинина ≈ ${v} мл/мин${v<30?' — осторожно, коррекция дозы':''}.\n`;
+  n+=`Источник: SOGC No.417 (PMID 33878456); RCOG 37a; ENOXACAN II (PMID 11919306).\n`;
+  n+=`Инструмент поддержки решения; не заменяет клиническое суждение и инструкцию препарата. При поддержке Farmak.`;
+  return n;
+}
+
+/* ============ GEMOTRAN PROTOCOL ============ */
+let gmMin=null;
+function animGm(){requestAnimationFrame(()=>{const b=$('res-gm-beam');if(b)b.style.transform=b.dataset.t;});}
+function goGm(){show('scr-gm');setSteps(1,true);$('bar').classList.add('hidden');$('gm-body').innerHTML=gmRender();animGm();}
+function setGmTime(m){gmMin=m;$('gm-body').innerHTML=gmRender();window.scrollTo(0,0);animGm();}
+function gmRender(){
+  let h='';
+  h+=`<div class="eyebrow gm">Экстренный протокол</div>`;
+  h+=`<h1 class="title">Послеродовое кровотечение</h1>`;
+  h+=`<p class="lead">Транексамовая кислота — часть первого ответа вместе с утеротониками. Решает время: эффект максимален в первые 3 часа.</p>`;
+
+  // ШАГ 1: время — до ответа НИЧЕГО другого не показываем (весы/доза/решение скрыты)
+  if(gmMin===null){
+    h+=`<div class="frame-band" style="margin-bottom:4px"><h3 style="color:var(--gm-deep)">Сколько времени от начала кровотечения?</h3><p>Выберите, чтобы увидеть баланс «время ↔ терапевтическое окно» и протокол.</p>
+      <div class="steps4" style="margin-top:12px">
+        <button class="btn-block" style="background:var(--gm);color:#fff" onclick="setGmTime(45)">Менее 1 часа</button>
+        <button class="btn-block" style="background:var(--gm);color:#fff" onclick="setGmTime(150)">1–3 часа</button>
+        <button class="btn-block" style="background:#fff;color:var(--gm-deep);border:1px solid var(--gm)" onclick="setGmTime(220)">Более 3 часов</button>
+      </div></div>`;
+    return h; // гейт: дальше ничего не рендерим, пока время не выбрано
+  }
+
+  // ШАГ 2: весы «прошло времени ↔ окно 180 мин» — та же механика, что у Фленокса, тема 'gm'
+  const inWin=gmMin<180;
+  h+=`<div class="bigscale" style="margin-bottom:14px"><div class="bh"><span class="l">◀ Окно 3 ч</span><span class="r">Прошло времени ▶</span></div><div class="bssvg">${beamSVG(gmMin,180,false,'gm','Окно','Прошло','res-gm')}</div></div>`;
+
+  h+=`<div class="window ${inWin?'good':'late'}">
+    <div class="wbig">${inWin?'−31%':'⏱'}</div>
+    <div class="wsub">${inWin?'Окно максимальной пользы: снижение смертности при введении в первые 3 часа (WOMAN Trial). Вводить немедленно.':'После 3 часов польза снижается — каждая минута на счету. Вводить как можно раньше по клиническому решению.'}</div>
+    <div style="margin-top:10px"><button class="btn-ghost" onclick="setGmTime(null)">↺ изменить время</button></div>
+  </div>`;
+
+  // ШАГ 3: доза — в ампулах, 1 ампула = 500 мг (5 мл, 100 мг/мл)
+  h+=`<div class="dosebox"><div class="amp">1 ампула = 500 мг (5 мл)</div><div class="eq">2 ампулы (1 г) на введение</div><div class="fx">фиксированная доза — не зависит от массы тела</div></div>`;
+
+  h+=`<div class="steps4">
+    <div class="st4"><span class="n">1</span><span class="sx">Диагностика ПРК*<small>клиническая оценка объёма кровопотери</small></span></div>
+    <div class="st4"><span class="n">2</span><span class="sx">Утеротоники + транексамовая кислота<small>ТК как часть первого ответа, не вместо утеротоников</small></span></div>
+    <div class="st4"><span class="n">3</span><span class="sx">2 ампулы (1 г) в/в медленно 10–20 мин<small>скорость ~1 мл/мин</small></span></div>
+    <div class="st4"><span class="n">4</span><span class="sx">Повтор 2 ампул (1 г) через 30 мин<small>если кровотечение продолжается или возобновилось в течение 24 ч</small></span></div>
+  </div>`;
+
+  h+=`<div class="decision gm">
+    <div class="dk">Препарат в протоколе</div>
+    <div class="brandname">Гемотран</div>
+    <div class="brandsub">транексамовая кислота · антифибринолитик · раствор для инъекций</div>
+    <div class="dose">
+      <div class="dose-row hl"><span class="k">Разовая доза</span><span class="v">2 ампулы (1 г) в/в</span></div>
+      <div class="dose-row"><span class="k">Введение</span><span class="v">медленно, 10–20 мин</span></div>
+      <div class="dose-row"><span class="k">Повтор</span><span class="v">2 ампулы (1 г) через 30 мин</span></div>
+    </div>
+    <div class="note-mini">1 ампула = 5 мл раствора 100 мг/мл = 500 мг. Рациональный контроль кровопотери как часть протокола ПРК; не заменяет хирургический гемостаз и утеротоники.</div>
+  </div>`;
+
+  h+=`<div class="flag">${warnIco()}<div><b>Осторожность:</b> тяжёлая почечная недостаточность — противопоказание; при лёгкой/умеренной — снижение дозы по креатинину. ВТЭ в анамнезе / высокий тромбогенный риск — только по жизненным показаниям после консультации специалиста.</div></div>`;
+
+  const note=gmNote(gmMin,inWin);
+  h+=shareBlock(note,true);
+  h+=resetBtn('gm');
+  h+=`<p class="disc gm">*ПРК — послеродовое кровотечение. Источники: <a href="https://pubmed.ncbi.nlm.nih.gov/28456509/" target="_blank" rel="noopener">WOMAN Trial, Lancet 2017, PMID 28456509</a> · ВОЗ + FIGO/ICM Consolidated PPH Guidelines · Инструкция Гемотран (UZ). Инструмент поддержки клинического решения — не заменяет клиническое суждение, инструкцию препарата и клинические рекомендации. При поддержке Farmak.</p>`;
+  return h;
+}
+function gmNote(mins,inWin){
+  let n=`КЛИНИЧЕСКАЯ ЗАМЕТКА · Протокол при послеродовом кровотечении\n`;
+  n+=`Время от начала кровотечения: ~${mins} мин (${inWin?'в пределах окна 3 ч':'окно 3 ч превышено'}).\n`;
+  n+=`Транексамовая кислота — часть первого ответа вместе с утеротониками; эффект максимален в первые 3 часа (WOMAN Trial).\n`;
+  n+=`Гемотран: 2 ампулы (1 г, по 500 мг/5 мл) в/в медленно 10–20 мин; повтор 2 ампул (1 г) через 30 мин при продолжении/возобновлении кровотечения в течение 24 ч.\n`;
+  n+=`Осторожность: тяжёлая почечная недостаточность — противопоказание; коррекция дозы при сниженной функции почек; тромбогенный риск учитывать.\n`;
+  n+=`Источник: WOMAN Trial (PMID 28456509); ВОЗ/FIGO PPH; инструкция Гемотран (UZ).\n`;
+  n+=`Инструмент поддержки решения; не заменяет клиническое суждение и инструкцию препарата. При поддержке Farmak.`;
+  return n;
+}
+
+/* ============ SHARE ============ */
+function shareBlock(note,gm){
+  window._note=note;
+  return `<div class="share-row">
+    <button class="prim" onclick="doShare()">${shareIco()} Поделиться</button>
+    <button onclick="doCopy()">${copyIco()} Копировать</button>
+  </div>
+  <div class="share-row" style="margin-top:0">
+    <button onclick="doTg()" style="color:#229ED9">${tgIco()} В Telegram</button>
+  </div>`;
+}
+async function doShare(){
+  const t=window._note;
+  if(navigator.share){try{await navigator.share({title:'Клиническая заметка · Farmak',text:t});}catch(e){}}
+  else{doCopy();}
+}
+function doCopy(){
+  const t=window._note;
+  if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>toast('Заметка скопирована')).catch(()=>fallbackCopy(t));}
+  else fallbackCopy(t);
+}
+function fallbackCopy(t){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Заметка скопирована');}catch(e){}document.body.removeChild(ta);}
+function doTg(){const t=encodeURIComponent(window._note);window.open('https://t.me/share/url?url='+encodeURIComponent(location.href)+'&text='+t,'_blank');}
+
+/* ============ shared bits ============ */
+function resetBtn(which){return `<div style="text-align:center;margin:8px 0 4px"><button class="btn-ghost" onclick="${which==='fx'?'resetFx()':'goHub()'}">${which==='fx'?'↺ новый пациент':'‹ к выбору'}</button></div>`;}
+function resetFx(){sel={};renal={age:'',wt:'',cr:'',unit:'umol'};goFxFactors();}
+function warnIco(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3L12 3z" stroke="#C0801A" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4M12 17h.01" stroke="#C0801A" stroke-width="2" stroke-linecap="round"/></svg>';}
+function clockIco(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#1c3a63" stroke-width="2"/><path d="M12 7v5l3 2" stroke="#1c3a63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+function shareIco(){return '<svg viewBox="0 0 24 24" fill="none"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 15V4M8 8l4-4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+function copyIco(){return '<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15V5a2 2 0 012-2h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';}
+function tgIco(){return '<svg viewBox="0 0 24 24" fill="none"><path d="M21 4L3 11l5 2 2 6 3-4 5 4 3-15z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';}
+
+/* ============ MODAL ============ */
+function openModal(){
+  $('sheet').innerHTML=`<h4>Гемостаз в гинекологии</h4>
+    <p>Два инструмента поддержки решения у периоперационной пациентки — по двум противоположным угрозам гемостаза:</p>
+    <ul>
+      <li><b>Профилактика тромбоза</b> — оценка риска ВТЭ после операции / кесарева и ориентир по Фленокс 4000.</li>
+      <li><b>Контроль кровотечения</b> — протокол при послеродовом кровотечении с транексамовой кислотой (Гемотран).</li>
+    </ul>
+    <p style="color:var(--mute)">Инструмент поддержки клинического решения. Не заменяет суждение врача, инструкцию препарата и действующие клинические рекомендации.</p>
+    <div class="src">SOGC No.417 (PMID 33878456) · Padua (PMID 19917854) · RCOG 37a · ENOXACAN II (PMID 11919306) · WOMAN Trial (PMID 28456509) · ВОЗ/FIGO PPH<br>При поддержке Farmak</div>
+    <button class="close" onclick="closeModal()">Понятно</button>`;
+  $('modal').classList.add('open');
+}
+function closeModal(){$('modal').classList.remove('open');}
+
+window.addEventListener('hashchange',()=>{if(!$('gate').classList.contains('hidden'))return;route();});
+</script>
+</body>
+</html>

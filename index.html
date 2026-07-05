@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1A2E5A">
+<title>Farmak Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A2333; --ink-soft:#55607A; --mute:#8A93A8;
+  --paper:#EEF1F7; --card:#FFFFFF; --line:#DDE3EE;
+  --navy:#1A2E5A; --navy-tint:#E7EBF5;
+  --display:'Spectral',Georgia,serif;
+  --ui:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --r:18px;
+  --sh:0 1px 2px rgba(26,35,51,.05),0 10px 30px rgba(26,35,51,.09);
+  --sh-lg:0 6px 16px rgba(26,35,51,.10),0 20px 50px rgba(26,35,51,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:var(--ui);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;line-height:1.45}
+.app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.hidden{display:none!important}
+
+/* GATE (тот же принцип, что и в инструментах) */
+.gate{position:fixed;inset:0;z-index:100;background:linear-gradient(160deg,#1A2E5A,#2A1440 70%);display:flex;align-items:center;justify-content:center;padding:26px}
+.gate-inner{max-width:400px;text-align:center;color:#fff}
+.gate .glyph{width:58px;height:58px;margin:0 auto 20px;border-radius:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);display:grid;place-items:center}
+.gate h2{font-family:var(--display);font-weight:600;font-size:24px;margin:0 0 10px}
+.gate p{font-size:13.5px;color:rgba(255,255,255,.8);margin:0 0 26px;line-height:1.5}
+.gate .gbtns{display:flex;flex-direction:column;gap:11px}
+.gate button{border:none;border-radius:13px;padding:15px;font-family:var(--ui);font-size:15px;font-weight:700;cursor:pointer}
+.gate .yes{background:var(--navy);color:#fff}
+.gate .no{background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.25);font-weight:600}
+.gate .fine{font-size:11px;color:rgba(255,255,255,.5);margin-top:20px;line-height:1.5}
+
+/* HEADER */
+.top{padding:26px 22px 6px}
+.brandmark{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.logo-dot{width:38px;height:38px;border-radius:11px;background:var(--navy);display:grid;place-items:center;flex:0 0 auto}
+.logo-dot svg{width:20px;height:20px}
+.brandtext{font-family:var(--display);font-weight:700;font-size:19px;color:var(--navy);line-height:1.1}
+.brandtext small{display:block;font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--mute);margin-top:1px}
+
+.screen{padding:8px 20px 40px;flex:1}
+.lead{font-size:13.5px;color:var(--ink-soft);margin:6px 0 22px;line-height:1.5}
+
+.speclist{display:flex;flex-direction:column;gap:11px}
+.spec{display:flex;align-items:center;gap:14px;border:1px solid var(--line);background:var(--card);border-radius:var(--r);padding:16px;cursor:pointer;box-shadow:var(--sh);transition:transform .12s;text-align:left;width:100%}
+.spec:active{transform:scale(.985)}
+.spec .ico{width:46px;height:46px;border-radius:13px;flex:0 0 auto;display:grid;place-items:center}
+.spec .body{flex:1;min-width:0}
+.spec h3{margin:0 0 2px;font-size:15.5px;font-weight:800;color:var(--ink)}
+.spec p{margin:0;font-size:12px;color:var(--ink-soft);line-height:1.4}
+.spec .arr{font-size:22px;color:var(--line);flex:0 0 auto}
+
+.spec.gyn .ico{background:linear-gradient(135deg,#FCEBDD,#F7E1DE)}
+.spec.soon{opacity:.52;cursor:default}
+.spec.soon .ico{background:var(--navy-tint)}
+.spec.soon:active{transform:none}
+.tagsoon{display:inline-block;margin-top:6px;font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.4px;color:var(--mute);background:#F1F3F8;padding:2px 7px;border-radius:6px}
+
+.section-h{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--mute);margin:26px 2px 11px}
+
+.disc{font-size:10.5px;color:var(--mute);line-height:1.5;margin-top:28px;padding-top:14px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="gate" id="gate">
+    <div class="gate-inner">
+      <div class="glyph">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 8v6M9 11h6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </div>
+      <h2>Клинические инструменты Farmak</h2>
+      <p>Материалы содержат информацию о рецептурных препаратах и предназначены только для специалистов здравоохранения.</p>
+      <div class="gbtns">
+        <button class="yes" onclick="document.getElementById('gate').classList.add('hidden');document.getElementById('main').classList.remove('hidden')">Да, я медицинский работник</button>
+        <button class="no" onclick="this.parentElement.insertAdjacentHTML('afterend','<p style=\'margin-top:18px;color:rgba(255,255,255,.8);font-size:12.5px\'>Доступ только для медицинских работников.</p>')">Нет</button>
+      </div>
+      <div class="fine">Инструменты поддержки клинического решения. Не заменяют клиническое суждение врача, инструкцию препарата и действующие рекомендации.</div>
+    </div>
+  </div>
+
+  <div id="main" class="hidden">
+    <div class="top">
+      <div class="brandmark">
+        <div class="logo-dot"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+        <div class="brandtext">Farmak Tools<small>клинические инструменты Невро-1</small></div>
+      </div>
+    </div>
+
+    <div class="screen">
+      <p class="lead">Выберите вашу специальность — откроется инструмент поддержки решения для вашей клинической ситуации.</p>
+
+      <div class="section-h">Доступно сейчас</div>
+      <div class="speclist">
+        <button class="spec gyn" onclick="location.href='gyn.html'">
+          <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3s6 6 6 11a6 6 0 01-12 0c0-5 6-11 6-11z" stroke="#B8351C" stroke-width="1.9" stroke-linejoin="round"/></svg></div>
+          <div class="body"><h3>Гинекология</h3><p>Тромбопрофилактика (Фленокс 4000) и контроль кровотечения (Гемотран)</p></div>
+          <span class="arr">›</span>
+        </button>
+      </div>
+
+      <div class="section-h">Готовится</div>
+      <div class="speclist">
+        <div class="spec soon">
+          <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2a9 9 0 100 18 9 9 0 000-18z" stroke="#8A93A8" stroke-width="1.7"/></svg></div>
+          <div class="body"><h3>Неврология</h3><p>Тяжёлый инсульт, первые часы<span class="tagsoon">скоро</span></p></div>
+        </div>
+        <div class="spec soon">
+          <div class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2a9 9 0 100 18 9 9 0 000-18z" stroke="#8A93A8" stroke-width="1.7"/></svg></div>
+          <div class="body"><h3>Реанимация / терапия</h3><p>Профилактика ВТЭ при сниженной подвижности<span class="tagsoon">скоро</span></p></div>
+        </div>
+      </div>
+
+      <p class="disc">Все инструменты — для поддержки клинического решения медицинскими работниками. Не заменяют клиническое суждение, инструкцию препарата и действующие клинические рекомендации. При поддержке Farmak.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>
