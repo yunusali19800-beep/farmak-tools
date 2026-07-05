@@ -324,11 +324,12 @@ h1.title{font-family:var(--display);font-weight:600;font-size:25px;line-height:1
   <div class="sheet" id="sheet"></div>
 </div>
 
+<script src="assets/track.js"></script>
 <script>
 /* ================= UTIL ================= */
 const $=id=>document.getElementById(id);
 const CHECK='<svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-function show(id){['scr-hub','scr-fx-fx','scr-fx-res','scr-gm'].forEach(s=>$(s).classList.add('hidden'));$(id).classList.remove('hidden');window.scrollTo(0,0);}
+function show(id){['scr-hub','scr-fx-fx','scr-fx-res','scr-gm'].forEach(s=>$(s).classList.add('hidden'));$(id).classList.remove('hidden');window.scrollTo(0,0);if(window.FarmakTrack)FarmakTrack.log('gyn',id);}
 function setSteps(n,gm){const s=$('steps');s.className='steps'+(gm?' gm':'');['s0','s1','s2'].forEach((id,i)=>{const e=$(id);e.className=i<n?'done':(i===n?'on':'');});}
 function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1600);}
 
