@@ -1,5 +1,7 @@
 const { getStore } = require("@netlify/blobs");
 
+const MAX_RECORDS = 5000;
+
 exports.handler = async (event) => {
   const cors = {
     "Access-Control-Allow-Origin": "*",
@@ -36,8 +38,20 @@ exports.handler = async (event) => {
     }
 
     const store = getStore("scans");
-    const key = `${ts}-${Math.random().toString(36).slice(2, 8)}`;
-    await store.setJSON(key, rec);
+    let list = [];
+    try {
+      const existing = await store.get("events", { type: "json" });
+      if (Array.isArray(existing)) list = existing;
+    } catch (e) {
+      list = [];
+    }
+
+    list.push(rec);
+    if (list.length > MAX_RECORDS) {
+      list = list.slice(list.length - MAX_RECORDS);
+    }
+
+    await store.setJSON("events", list);
 
     return { statusCode: 200, headers: cors, body: JSON.stringify({ ok: true }) };
   } catch (e) {

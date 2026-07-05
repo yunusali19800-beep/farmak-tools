@@ -16,27 +16,23 @@ exports.handler = async (event) => {
   try {
     const store = getStore("scans");
     let records = [];
-    let cursor;
-    do {
-      const page = await store.list({ cursor });
-      const chunk = await Promise.all(
-        page.blobs.map((b) => store.get(b.key, { type: "json" }))
-      );
-      records = records.concat(chunk.filter(Boolean));
-      cursor = page.cursor;
-    } while (cursor);
+    try {
+      const existing = await store.get("events", { type: "json" });
+      if (Array.isArray(existing)) records = existing;
+    } catch (e) {
+      records = [];
+    }
 
     records.sort((a, b) => a.ts - b.ts);
 
-    // --- агрегаты ---
     const byTool = {};
     const byScreen = {};
     const bySrc = {};
     const byDevice = {};
 
     for (const r of records) {
-      byTool[r.tool] = (byTool[r.tool] || 0) + 1;
-      byScreen[r.screen] = (byScreen[r.screen] || 0) + 1;
+      byTool[r.tool || "(нет)"] = (byTool[r.tool || "(нет)"] || 0) + 1;
+      byScreen[r.screen || "(нет)"] = (byScreen[r.screen || "(нет)"] || 0) + 1;
       bySrc[r.src || "(без метки)"] = (bySrc[r.src || "(без метки)"] || 0) + 1;
       if (!byDevice[r.device]) byDevice[r.device] = [];
       byDevice[r.device].push(r);
@@ -44,7 +40,6 @@ exports.handler = async (event) => {
 
     const uniqueDevices = Object.keys(byDevice).length;
 
-    // --- детекция подозрительных паттернов ---
     const flags = [];
     for (const [device, events] of Object.entries(byDevice)) {
       events.sort((a, b) => a.ts - b.ts);
@@ -95,6 +90,20 @@ exports.handler = async (event) => {
       })
     };
   } catch (e) {
-    return { statusCode: 500, headers: cors, body: JSON.stringify({ ok: false, error: String(e) }) };
+    return {
+      statusCode: 200,
+      headers: { ...cors, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ok: true,
+        total: 0,
+        uniqueDevices: 0,
+        byTool: {},
+        byScreen: {},
+        bySrc: {},
+        flags: [],
+        recent: [],
+        warning: String(e)
+      })
+    };
   }
 };

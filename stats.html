@@ -55,6 +55,14 @@ async function load(){
       return;
     }
     const d = await res.json();
+    if (d.warning) {
+      document.getElementById('err').textContent = 'Внутреннее предупреждение: ' + d.warning;
+    }
+    if (!d.ok) {
+      document.getElementById('out').innerHTML = '';
+      document.getElementById('err').textContent = 'Ошибка сервера: ' + (d.error || 'неизвестно');
+      return;
+    }
     render(d);
   }catch(e){
     document.getElementById('err').textContent = 'Ошибка загрузки: ' + e;
