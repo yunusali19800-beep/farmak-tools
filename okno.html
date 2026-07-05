@@ -171,7 +171,7 @@ h1.title{font-family:var(--display);font-weight:600;font-size:25px;line-height:1
       </div>
       <button class="iinfo" onclick="openModal()">i</button>
     </div>
-    <div class="steps" id="steps"><i id="s0"></i><i id="s1"></i><i id="s2"></i></div>
+    <div class="steps" id="steps"><i id="s0"></i><i id="s1"></i><i id="s2"></i><i id="s3"></i></div>
   </div>
 
   <!-- SCREEN 0: intro / hook -->
@@ -224,6 +224,14 @@ h1.title{font-family:var(--display);font-weight:600;font-size:25px;line-height:1
     </div>
   </div>
 
+  <!-- SCREEN 1.5: поворот — что происходит прямо сейчас -->
+  <div class="screen hidden" id="scr-turn">
+    <div class="backrow"><button onclick="goTime()">‹ изменить данные</button></div>
+    <div class="eyebrow">Прямо сейчас</div>
+    <h1 class="title" id="turn-title">Что происходит в этот момент</h1>
+    <div class="frame-band" id="turn-band" style="margin-bottom:22px"></div>
+  </div>
+
   <!-- SCREEN 2: result -->
   <div class="screen hidden" id="scr-result">
     <div class="backrow"><button onclick="goTime()">‹ изменить данные</button></div>
@@ -232,7 +240,7 @@ h1.title{font-family:var(--display);font-weight:600;font-size:25px;line-height:1
 
   <!-- footer bar -->
   <div class="bar hidden" id="bar">
-    <button class="barbtn" onclick="goResult()">Показать протокол ›</button>
+    <button class="barbtn" id="barbtn" onclick="goTurn()">Далее ›</button>
   </div>
 </div>
 
@@ -247,8 +255,8 @@ h1.title{font-family:var(--display);font-weight:600;font-size:25px;line-height:1
 <script>
 /* ================= UTIL ================= */
 const $=id=>document.getElementById(id);
-function show(id){['scr-intro','scr-time','scr-result'].forEach(s=>$(s).classList.add('hidden'));$(id).classList.remove('hidden');window.scrollTo(0,0);if(window.FarmakTrack)FarmakTrack.log('okno',id);}
-function setSteps(n){['s0','s1','s2'].forEach((id,i)=>{const e=$(id);e.className=i<n?'done':(i===n?'on':'');});}
+function show(id){['scr-intro','scr-time','scr-turn','scr-result'].forEach(s=>$(s).classList.add('hidden'));$(id).classList.remove('hidden');window.scrollTo(0,0);if(window.FarmakTrack)FarmakTrack.log('okno',id);}
+function setSteps(n){['s0','s1','s2','s3'].forEach((id,i)=>{const e=$(id);e.className=i<n?'done':(i===n?'on':'');});}
 function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1600);}
 
 /* ================= STATE ================= */
@@ -256,9 +264,7 @@ let state={bucket:null, severe:null, reperfusion:null};
 
 /* ================= NAV ================= */
 function goIntro(){show('scr-intro');$('bar').classList.add('hidden');setSteps(0);}
-function goTime(){show('scr-time');setSteps(1);$('bar').classList.add('hidden');buildTimegrid();
-  if(state.bucket){$('toggles-block').classList.remove('hidden');$('bar').classList.remove('hidden');}
-}
+function goTime(){show('scr-time');setSteps(1);buildTimegrid();updateTimeBar();}
 
 const BUCKETS=[
   {id:'early', h:'Менее 6 часов', s:'Гиперострая фаза — максимальное окно возможностей', pos:8},
@@ -280,16 +286,64 @@ function pickBucket(id){
   state.bucket=id;
   buildTimegrid();
   $('toggles-block').classList.remove('hidden');
-  $('bar').classList.remove('hidden');
+  updateTimeBar();
   window.scrollTo(0,document.body.scrollHeight);
 }
-function setSeverity(v){state.severe=v;$('tog-sev-yes').className='tog'+(v===true?' on':'');$('tog-sev-no').className='tog'+(v===false?' on':'');}
-function setReperfusion(v){state.reperfusion=v;['yes','no','unk'].forEach(k=>$('tog-rep-'+k).className='tog'+(v===k?' on':''));}
+function setSeverity(v){state.severe=v;$('tog-sev-yes').className='tog'+(v===true?' on':'');$('tog-sev-no').className='tog'+(v===false?' on':'');updateTimeBar();}
+function setReperfusion(v){state.reperfusion=v;['yes','no','unk'].forEach(k=>$('tog-rep-'+k).className='tog'+(v===k?' on':''));updateTimeBar();}
+
+function updateTimeBar(){
+  const ready = state.bucket && state.severe!==null && state.reperfusion!==null;
+  if(!state.bucket){$('bar').classList.add('hidden');return;}
+  $('bar').classList.remove('hidden');
+  const btn=$('barbtn');
+  if(ready){
+    btn.disabled=false; btn.style.opacity='1';
+    btn.textContent='Далее ›'; btn.onclick=goTurn;
+  } else {
+    btn.disabled=false; btn.style.opacity='.55';
+    btn.textContent='Укажите тяжесть и реперфузию'; btn.onclick=()=>toast('Нужно отметить оба пункта — это меняет тактику');
+  }
+}
+
+/* ================= TURN (поворот) ================= */
+function goTurn(){
+  if(!(state.bucket && state.severe!==null && state.reperfusion!==null)){toast('Укажите тяжесть и реперфузию');return;}
+  show('scr-turn');
+  setSteps(2);
+  $('bar').classList.remove('hidden');
+  const btn=$('barbtn');
+  btn.disabled=false; btn.style.opacity='1';
+  btn.textContent='Что можно сделать сейчас ›'; btn.onclick=goResult;
+  $('turn-band').innerHTML=renderTurn();
+}
+
+function renderTurn(){
+  const b=state.bucket, sev=state.severe;
+  let core='';
+  if(b==='early'){
+    core='Гиперострая фаза: кальций лавиной затапливает клетки пенумбры, мембраны теряют потенциал покоя. Но большая часть ткани вокруг очага — пока жива и удерживается коллатералями.';
+  } else if(b==='mid'){
+    core='Прямо сейчас в пенумбре этого пациента — пик оксидативного удара: свободные радикалы атакуют митохондрии и мембраны нейронов, которые ещё можно спасти.';
+  } else {
+    core='К этому часу окислительный удар в пенумбре, скорее всего, уже прошёл свой пик — необратимость наступает быстрее, чем кажется по часам на стене.';
+  }
+  let stake='';
+  if(b!=='late'){
+    stake = sev===true
+      ? ' У пациента с таким выраженным дефицитом на кону не просто восстановление — вероятность на всю жизнь остаться зависимым от посторонней помощи.'
+      : ' Дефицит сейчас лёгкий — но именно то, что произойдёт в ближайшие часы, решает, останется ли он таким.';
+  } else {
+    stake = ' Разговор с этим пациентом теперь не про то, как остановить процесс в первые часы, а про то, что делать дальше.';
+  }
+  return `<h3>${b==='late'?'Окно, вероятно, уже позади':'Ткань ещё можно спасти — счёт идёт на часы'}</h3><p>${core}${stake}</p>`;
+}
 
 /* ================= RESULT ================= */
 function goResult(){
   if(!state.bucket){toast('Выберите время от начала симптомов');return;}
-  setSteps(2);
+  setSteps(3);
+  $('bar').classList.add('hidden');
   show('scr-result');
   $('result-body').innerHTML=renderResult();
 }
