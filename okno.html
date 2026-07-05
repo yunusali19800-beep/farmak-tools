@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2D4899">
+<title>Окно на Флертис · Farmak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A2333; --ink-soft:#55607A; --mute:#8A93A8;
+  --paper:#EEF1F7; --card:#FFFFFF; --line:#DDE3EE; --line-soft:#EAEEF5;
+  --navy:#1A2E5A;
+  /* Флертис — глубокий синий (доминанта) + бирюзовый акцент циркуля (с упаковки) */
+  --ft:#2D4899; --ft-deep:#1F3373; --ft-tint:#E7EBF7; --ft-accent:#67B6C5;
+  --ok:#1FA463; --ok-tint:#E1F3EA;
+  --warn:#C0801A; --warn-tint:#F7ECD6;
+  --late:#8A93A8; --late-tint:#EDEFF3;
+  --display:'Spectral',Georgia,serif;
+  --ui:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --r:18px; --r-sm:12px;
+  --sh:0 1px 2px rgba(26,35,51,.05),0 10px 30px rgba(26,35,51,.09);
+  --sh-lg:0 6px 16px rgba(26,35,51,.10),0 20px 50px rgba(26,35,51,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:var(--ui);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;line-height:1.45;overscroll-behavior-y:none}
+.app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;display:flex;flex-direction:column;background:var(--paper)}
+.hidden{display:none!important}
+
+/* HEADER */
+.top{position:sticky;top:0;z-index:20;background:rgba(238,241,247,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:12px 18px 11px}
+.brandrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mark{display:flex;align-items:center;gap:10px;min-width:0}
+.mono-badge{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--ft-deep);background:var(--ft-tint);padding:4px 8px;border-radius:7px;white-space:nowrap}
+.wordmark{font-family:var(--display);font-weight:700;font-size:16px;color:var(--navy);letter-spacing:.2px;line-height:1.05}
+.wordmark small{display:block;font-family:var(--ui);font-size:9.5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--mute)}
+.iinfo{border:1px solid var(--line);background:var(--card);color:var(--navy);width:32px;height:32px;border-radius:10px;font-weight:700;font-size:15px;display:grid;place-items:center;cursor:pointer;flex:0 0 auto}
+.steps{display:flex;gap:5px;margin-top:11px}
+.steps i{height:3px;flex:1;border-radius:3px;background:var(--line);transition:background .3s}
+.steps i.on{background:var(--ft)} .steps i.done{background:var(--ft-deep)}
+
+.screen{flex:1;padding:18px 18px 130px;animation:fade .32s ease}
+@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;margin:2px 0 8px;color:var(--ft)}
+h1.title{font-family:var(--display);font-weight:600;font-size:25px;line-height:1.16;margin:0 0 7px;letter-spacing:-.2px;color:var(--ink)}
+.lead{font-size:13.5px;color:var(--ink-soft);margin:0 0 18px}
+
+/* frame band (портрет/проблема) */
+.frame-band{background:linear-gradient(135deg,#fff,#F1F4FB);border:1px solid var(--line);border-radius:var(--r);padding:16px 17px;margin-bottom:20px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.frame-band:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:linear-gradient(180deg,var(--ft),var(--ft-accent))}
+.frame-band h3{margin:0 0 6px;font-size:14.5px;font-weight:800;color:var(--navy);padding-left:6px}
+.frame-band p{margin:0;font-size:12.5px;color:var(--ink-soft);padding-left:6px;line-height:1.55}
+.frame-band ul{margin:8px 0 0;padding-left:24px;font-size:12.5px;color:var(--ink-soft);line-height:1.6}
+
+.btn-block{width:100%;border:none;border-radius:13px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--ui)}
+.btn-primary{background:var(--ft);color:#fff}
+.btn-primary:active{background:var(--ft-deep)}
+
+/* TIME GATE */
+.timegrid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:6px}
+.timebtn{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:15px 16px;cursor:pointer;box-shadow:var(--sh);text-align:left;transition:transform .12s,border-color .15s}
+.timebtn:active{transform:scale(.988)}
+.timebtn .tb-h{font-size:14.5px;font-weight:800;color:var(--ink)}
+.timebtn .tb-s{font-size:11.5px;color:var(--ink-soft);margin-top:2px}
+.timebtn .arr{font-size:22px;color:var(--line)}
+.timebtn.sel{border-color:var(--ft);background:var(--ft-tint)}
+.lkw-note{display:flex;gap:9px;align-items:flex-start;font-size:11.5px;color:var(--ink-soft);margin-top:12px;line-height:1.5;padding:0 2px}
+.lkw-note svg{flex:0 0 auto;margin-top:1px}
+
+/* TIMELINE (живой отклик) */
+.timeline-wrap{background:linear-gradient(180deg,#fff,#F7F9FC);border:1px solid var(--line);border-radius:var(--r);padding:16px 15px 14px;margin-bottom:18px;box-shadow:var(--sh)}
+.tl-head{display:flex;justify-content:space-between;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--mute);margin-bottom:10px}
+.tl-track{position:relative;height:10px;border-radius:6px;overflow:hidden;display:flex}
+.tl-seg{height:100%}
+.tl-seg.z1{flex:6;background:linear-gradient(90deg,#1FA463,#3FBF7F)}
+.tl-seg.z2{flex:18;background:linear-gradient(90deg,#3FBF7F,var(--warn))}
+.tl-seg.z3{flex:12;background:var(--late-tint)}
+.tl-marker{position:absolute;top:-7px;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--ft);box-shadow:0 3px 8px rgba(45,72,153,.35);transition:left .5s cubic-bezier(.34,1.4,.64,1);transform:translateX(-50%)}
+.tl-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--mute);margin-top:8px}
+.tl-note{font-size:11.5px;color:var(--ink-soft);margin-top:12px;line-height:1.5;text-align:center}
+
+/* toggles group */
+.group{margin-bottom:16px}
+.group-h{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 9px}
+.group-h b{font-size:12.5px;font-weight:800;color:var(--navy);letter-spacing:.2px}
+.group-h span{font-size:11px;color:var(--mute)}
+.togrow{display:flex;gap:9px}
+.tog{flex:1;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:13px 10px;text-align:center;cursor:pointer;font-size:13px;font-weight:700;color:var(--ink-soft);transition:all .14s}
+.tog.on{border-color:var(--ft);background:var(--ft-tint);color:var(--ft-deep)}
+.tog small{display:block;font-weight:500;font-size:10.5px;margin-top:2px;color:var(--mute)}
+.tog.on small{color:var(--ft-deep);opacity:.75}
+
+/* footer bar */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:30;max-width:480px;margin:0 auto;padding:12px 18px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(238,241,247,0),rgba(238,241,247,.96) 30%)}
+.barbtn{width:100%;border:none;border-radius:14px;padding:15px;font-family:var(--ui);font-size:15px;font-weight:800;cursor:pointer;background:var(--ft);color:#fff;box-shadow:var(--sh-lg)}
+.barbtn:active{background:var(--ft-deep)}
+
+/* RESULT: window verdict */
+.window{border-radius:var(--r);padding:18px;margin-bottom:15px;text-align:center;border:1px solid;box-shadow:var(--sh)}
+.window.good{background:var(--ok-tint);border-color:#B7E2CC}
+.window.warn{background:var(--warn-tint);border-color:#E7D2A2}
+.window.late{background:var(--late-tint);border-color:var(--line)}
+.window .wk{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.window.good .wk{color:var(--ok)} .window.warn .wk{color:var(--warn)} .window.late .wk{color:var(--mute)}
+.window .wbig{font-family:var(--display);font-size:20px;font-weight:700;line-height:1.25;color:var(--ink)}
+.window .wsub{font-size:12px;color:var(--ink-soft);margin-top:9px;line-height:1.55}
+
+.backrow{display:flex;align-items:center;margin:-2px 0 10px}
+.backrow button{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--ink-soft);font-size:13px;font-weight:600;cursor:pointer;padding:5px 0;font-family:var(--ui)}
+
+.dosebox{background:var(--ft);color:#fff;border-radius:var(--r);padding:17px;text-align:center;margin-bottom:15px;box-shadow:var(--sh-lg)}
+.dosebox .amp{font-family:var(--mono);font-size:13px;font-weight:600;opacity:.85}
+.dosebox .eq{font-family:var(--display);font-size:23px;font-weight:700;margin:5px 0 3px}
+.dosebox .fx{font-size:11.5px;opacity:.85}
+
+.steps4{display:grid;grid-template-columns:1fr;gap:9px;margin-bottom:15px}
+.st4{display:flex;align-items:center;gap:13px;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:12px 14px;box-shadow:var(--sh)}
+.st4 .n{width:30px;height:30px;flex:0 0 auto;border-radius:50%;background:var(--ft);color:#fff;font-family:var(--mono);font-weight:700;font-size:14px;display:grid;place-items:center}
+.st4 .sx{font-size:13.5px;font-weight:600} .st4 .sx small{display:block;font-weight:500;color:var(--ink-soft);font-size:11.5px;margin-top:1px}
+
+.decision{border:1px solid var(--ft);background:linear-gradient(180deg,var(--ft-tint),#fff);border-radius:var(--r);padding:17px 16px;margin-bottom:14px;box-shadow:var(--sh-lg)}
+.decision .dk{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--ft-deep);margin-bottom:7px}
+.decision .brandname{font-family:var(--display);font-size:24px;font-weight:700;color:var(--ft-deep);line-height:1}
+.decision .brandsub{font-size:11.5px;color:var(--ink-soft);margin-top:3px}
+.dose{margin-top:13px;border-top:1px dashed var(--line);padding-top:11px}
+.dose-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:5px 0;gap:10px}
+.dose-row .k{color:var(--ink-soft)} .dose-row .v{font-family:var(--mono);font-weight:700;text-align:right}
+.dose-row.hl{background:var(--ok-tint);margin:3px -8px;padding:8px;border-radius:9px}
+.dose-row.hl .v{color:#15613E}
+.note-mini{font-size:11px;color:var(--mute);margin-top:10px;line-height:1.45}
+
+.flag{display:flex;gap:10px;align-items:flex-start;border:1px solid #E7D2A2;background:var(--warn-tint);border-radius:13px;padding:12px 14px;margin-bottom:15px;font-size:12.5px;color:#7A5410;line-height:1.45}
+.flag svg{flex:0 0 auto;margin-top:1px}
+.flag.info{border-color:#B9C9E6;background:#EAF0FA;color:#1c3a63}
+
+.share-row{display:flex;gap:10px;margin:4px 0 8px}
+.share-row button{flex:1;border-radius:13px;padding:13px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--ui);border:1px solid var(--line);background:var(--card);color:var(--navy);display:flex;align-items:center;justify-content:center;gap:8px}
+.share-row button.prim{background:var(--navy);color:#fff;border-color:var(--navy)}
+.share-row button svg{width:17px;height:17px}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:12.5px;font-weight:600;padding:10px 16px;border-radius:11px;opacity:0;transition:opacity .25s;z-index:50;pointer-events:none}
+.toast.show{opacity:1}
+
+.disc{font-size:10.5px;color:var(--mute);line-height:1.5;border-top:1px solid var(--line);padding-top:12px;margin-top:8px}
+.disc a{color:var(--ft-deep);font-weight:600;text-decoration:none;border-bottom:1px solid rgba(45,72,153,.35)}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:60;background:rgba(26,35,51,.55);display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.sheet{background:var(--card);max-width:480px;width:100%;border-radius:20px 20px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom));max-height:84vh;overflow:auto;animation:up .3s ease}
+@keyframes up{from{transform:translateY(30px);opacity:.6}to{transform:none;opacity:1}}
+.sheet h4{font-family:var(--display);font-size:19px;margin:0 0 11px;color:var(--navy)}
+.sheet p{font-size:12.5px;color:var(--ink-soft);margin:0 0 10px}
+.sheet ul{margin:0 0 10px;padding-left:18px;font-size:12.5px;color:var(--ink-soft)}
+.sheet .close{width:100%;margin-top:6px;background:var(--navy);color:#fff;border:none;border-radius:12px;padding:13px;font-weight:800;font-size:14px;cursor:pointer;font-family:var(--ui)}
+.src{font-family:var(--mono);font-size:10.5px;color:var(--mute);margin-top:8px;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="top">
+    <div class="brandrow">
+      <div class="mark">
+        <span class="mono-badge">ОКНО</span>
+        <div class="wordmark">Флертис<small>тяжёлый ОИИ · первые часы</small></div>
+      </div>
+      <button class="iinfo" onclick="openModal()">i</button>
+    </div>
+    <div class="steps" id="steps"><i id="s0"></i><i id="s1"></i><i id="s2"></i></div>
+  </div>
+
+  <!-- SCREEN 0: intro / hook -->
+  <div class="screen hidden" id="scr-intro">
+    <div class="eyebrow">Тяжёлый ишемический инсульт</div>
+    <h1 class="title">Окно на Флертис ещё открыто?</h1>
+    <div class="frame-band">
+      <h3>Исход тяжёлого ОИИ решается в первые часы</h3>
+      <p>У пациента с тяжёлым очаговым дефицитом и большим объёмом поражения ткань мозга продолжает повреждаться ещё долго после того, как сосуд открыт (или не был открыт вовсе). Пик оксидативного повреждения — между 6 и 24 часами от начала симптомов.</p>
+      <ul>
+        <li>Реперфузию (тромболизис/тромбэктомию) получают немногие</li>
+        <li>Даже после реперфузии оксидативное повреждение продолжается</li>
+        <li>Чем раньше начата защита — тем больше шанс перехватить процесс, пока он управляем</li>
+      </ul>
+    </div>
+    <button class="btn-block btn-primary" onclick="goTime()">Оценить окно ›</button>
+    <p class="disc" style="margin-top:16px">Инструмент поддержки клинического решения. Не заменяет суждение врача, инструкцию препарата и действующие клинические рекомендации. При поддержке Farmak.</p>
+  </div>
+
+  <!-- SCREEN 1: time + toggles -->
+  <div class="screen hidden" id="scr-time">
+    <div class="backrow"><button onclick="goIntro()">‹ назад</button></div>
+    <div class="eyebrow">Шаг 1 · Время</div>
+    <h1 class="title">Сколько времени от начала симптомов?</h1>
+    <p class="lead">Если точное время неизвестно — считайте от последнего момента, когда пациент точно был в норме (last known well).</p>
+
+    <div class="timegrid" id="timegrid"></div>
+
+    <div class="lkw-note">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#8A93A8" stroke-width="1.7"/><path d="M12 8v5M12 16h.01" stroke="#8A93A8" stroke-width="1.7" stroke-linecap="round"/></svg>
+      <span>Найден без сознания / без свидетелей — время начала = последний момент, когда точно был в норме, а не время обнаружения.</span>
+    </div>
+
+    <div id="toggles-block" class="hidden" style="margin-top:20px">
+      <div class="group">
+        <div class="group-h"><b>Тяжесть очагового дефицита</b></div>
+        <div class="togrow">
+          <div class="tog" id="tog-sev-yes" onclick="setSeverity(true)">Выраженный<small>гемиплегия / афазия / угнетение сознания</small></div>
+          <div class="tog" id="tog-sev-no" onclick="setSeverity(false)">Легкий / умеренный<small>нет грубого дефицита</small></div>
+        </div>
+      </div>
+      <div class="group">
+        <div class="group-h"><b>Реперфузия</b><span>тромболизис / тромбэктомия</span></div>
+        <div class="togrow">
+          <div class="tog" id="tog-rep-yes" onclick="setReperfusion('yes')">Да</div>
+          <div class="tog" id="tog-rep-no" onclick="setReperfusion('no')">Нет</div>
+          <div class="tog" id="tog-rep-unk" onclick="setReperfusion('unk')">Не знаю</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: result -->
+  <div class="screen hidden" id="scr-result">
+    <div class="backrow"><button onclick="goTime()">‹ изменить данные</button></div>
+    <div id="result-body"></div>
+  </div>
+
+  <!-- footer bar -->
+  <div class="bar hidden" id="bar">
+    <button class="barbtn" onclick="goResult()">Показать протокол ›</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">Скопировано</div>
+
+<!-- modal -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script src="assets/track.js"></script>
+<script>
+/* ================= UTIL ================= */
+const $=id=>document.getElementById(id);
+function show(id){['scr-intro','scr-time','scr-result'].forEach(s=>$(s).classList.add('hidden'));$(id).classList.remove('hidden');window.scrollTo(0,0);if(window.FarmakTrack)FarmakTrack.log('okno',id);}
+function setSteps(n){['s0','s1','s2'].forEach((id,i)=>{const e=$(id);e.className=i<n?'done':(i===n?'on':'');});}
+function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1600);}
+
+/* ================= STATE ================= */
+let state={bucket:null, severe:null, reperfusion:null};
+
+/* ================= NAV ================= */
+function goIntro(){show('scr-intro');$('bar').classList.add('hidden');setSteps(0);}
+function goTime(){show('scr-time');setSteps(1);$('bar').classList.add('hidden');buildTimegrid();
+  if(state.bucket){$('toggles-block').classList.remove('hidden');$('bar').classList.remove('hidden');}
+}
+
+const BUCKETS=[
+  {id:'early', h:'Менее 6 часов', s:'Гиперострая фаза — максимальное окно возможностей', pos:8},
+  {id:'mid',   h:'6–24 часа',     s:'Окно ещё открыто, приближается пик оксидативного повреждения', pos:55},
+  {id:'late',  h:'Более 24 часов', s:'Окно для старта Флертиса закрыто', pos:92},
+];
+
+function buildTimegrid(){
+  let h='';
+  BUCKETS.forEach(b=>{
+    h+=`<button class="timebtn ${state.bucket===b.id?'sel':''}" onclick="pickBucket('${b.id}')">
+      <div><div class="tb-h">${b.h}</div><div class="tb-s">${b.s}</div></div>
+      <span class="arr">›</span>
+    </button>`;
+  });
+  $('timegrid').innerHTML=h;
+}
+function pickBucket(id){
+  state.bucket=id;
+  buildTimegrid();
+  $('toggles-block').classList.remove('hidden');
+  $('bar').classList.remove('hidden');
+  window.scrollTo(0,document.body.scrollHeight);
+}
+function setSeverity(v){state.severe=v;$('tog-sev-yes').className='tog'+(v===true?' on':'');$('tog-sev-no').className='tog'+(v===false?' on':'');}
+function setReperfusion(v){state.reperfusion=v;['yes','no','unk'].forEach(k=>$('tog-rep-'+k).className='tog'+(v===k?' on':''));}
+
+/* ================= RESULT ================= */
+function goResult(){
+  if(!state.bucket){toast('Выберите время от начала симптомов');return;}
+  setSteps(2);
+  show('scr-result');
+  $('result-body').innerHTML=renderResult();
+}
+
+function renderResult(){
+  const b=state.bucket;
+  const severe=state.severe;
+  const rep=state.reperfusion;
+  let h='';
+
+  // ---- window verdict ----
+  if(b==='early'||b==='mid'){
+    const cls = b==='early' ? 'good' : 'warn';
+    const wk = b==='early' ? 'ОКНО ОТКРЫТО · оптимально' : 'ОКНО ОТКРЫТО · спешите';
+    let wbig, wsub;
+    if(b==='early'){
+      wbig='Пациент в первых 6 часах — максимальный шанс перехватить повреждение до пика оксидативного удара.';
+      wsub='Пик оксидативного повреждения — между 6 и 24 часами от начала симптомов. Начатый сейчас Флертис успевает встать в ткань до того, как митохондриальная катастрофа в пенумбре станет необратимой.';
+    } else {
+      wbig='Окно ещё открыто, но пик оксидативного повреждения приближается — не откладывайте старт.';
+      wsub='После 24 часов терапевтическое окно для старта Флертиса закрывается. Каждый час в этом промежутке снижает шанс перехватить процесс на управляемой стадии.';
+    }
+    h+=`<div class="window ${cls}"><div class="wk">${wk}</div><div class="wbig">${wbig}</div><div class="wsub">${wsub}</div></div>`;
+  } else {
+    h+=`<div class="window late"><div class="wk">ОКНО ЗАКРЫТО</div><div class="wbig">Для старта Флертиса терапевтическое окно (≤24 ч) превышено.</div><div class="wsub">Промо-формулировка окна — строго ≤24 часа от начала симптомов. Решение по дальнейшей нейропротекции и вторичной профилактике — по клиническому суждению и действующим рекомендациям.</div></div>`;
+    h+=timelineBlock(b);
+    h+=`<p class="disc">Источник: инструкция Флертис (Farmak, UZ) · Устав_Невро1. Инструмент поддержки клинического решения — не заменяет клиническое суждение, инструкцию препарата и клинические рекомендации. При поддержке Farmak.</p>`;
+    const note=buildNote(b,severe,rep);
+    h=h.replace('</div><p class="disc"','</div>'+shareBlock(note)+'<p class="disc"');
+    return h;
+  }
+
+  h+=timelineBlock(b);
+
+  // ---- severity framing ----
+  if(severe===false){
+    h+=`<div class="flag info">${infoIco()}<div>Платформа Флертиса создана для тяжёлого ОИИ с высоким риском тяжёлого исхода. При лёгком/умеренном дефиците окно формально открыто — решение по целесообразности остаётся клиническим.</div></div>`;
+  }
+
+  // ---- reperfusion framing ----
+  let repNote='';
+  if(rep==='yes'){
+    repNote='Пациент получил реперфузию — Флертис рассматривается как адъювант: оксидативное повреждение продолжается даже после успешной реканализации сосуда («парадокс реперфузии»).';
+  } else if(rep==='no'){
+    repNote='Пациент реперфузию не получил — для большинства пациентов с ОИИ в Узбекистане (>90–95%) это основной сценарий, и нейропротекция остаётся главным доступным рычагом влияния на исход.';
+  } else {
+    repNote='Статус реперфузии не уточнён — окно и схема не зависят от этого фактора.';
+  }
+  h+=`<div class="flag info">${infoIco()}<div>${repNote}</div></div>`;
+
+  // ---- dose ----
+  h+=`<div class="dosebox"><div class="amp">1 ампула (20 мл) = 30 мг · 1,5 мг/мл</div><div class="eq">30 мг в 100 мл NaCl · в/в инфузия 30 мин</div><div class="fx">2 раза в сутки · 14 дней · старт как можно раньше, не позднее 24 ч</div></div>`;
+
+  h+=`<div class="steps4">
+    <div class="st4"><span class="n">1</span><span class="sx">Разведение<small>30 мг (1 ампула 20 мл) в 100 мл 0,9% NaCl</small></span></div>
+    <div class="st4"><span class="n">2</span><span class="sx">В/в инфузия 30 минут<small>2 раза в сутки</small></span></div>
+    <div class="st4"><span class="n">3</span><span class="sx">Курс 14 дней<small>независимо от статуса реперфузии</small></span></div>
+  </div>`;
+
+  h+=`<div class="decision">
+    <div class="dk">Препарат в протоколе</div>
+    <div class="brandname">Флертис</div>
+    <div class="brandsub">эдаравон · поглотитель свободных радикалов · раствор для инъекций 1,5 мг/мл</div>
+    <div class="dose">
+      <div class="dose-row hl"><span class="k">Разовая доза</span><span class="v">30 мг в/в инфузия 30 мин</span></div>
+      <div class="dose-row"><span class="k">Кратность</span><span class="v">2 раза/сутки</span></div>
+      <div class="dose-row"><span class="k">Курс</span><span class="v">14 дней</span></div>
+      <div class="dose-row"><span class="k">Старт</span><span class="v">≤24 ч от начала ОИИ</span></div>
+    </div>
+    <div class="note-mini">Платформа Флертиса: тяжёлый ОИИ, первые часы, большой объём поражения, кардиоэмболический инсульт, высокий риск тяжёлого исхода.</div>
+  </div>`;
+
+  h+=`<div class="flag">${warnIco()}<div><b>Осторожность:</b> только чистый эдаравон. Данные TASTE/TASTE-SL (эдаравон + декскамфора) к Флертису не относятся.</div></div>`;
+
+  const note=buildNote(b,severe,rep);
+  h+=shareBlock(note);
+  h+=`<div style="text-align:center;margin:8px 0 4px"><button class="btn-ghost" style="background:none;border:none;color:var(--ink-soft);font-weight:700;padding:12px 4px;cursor:pointer;font-size:13.5px;font-family:var(--ui)" onclick="resetTool()">↺ новый пациент</button></div>`;
+  h+=`<p class="disc">Источники: Chen C et al., J Clin Pharm Ther 2021 (<a href="https://pubmed.ncbi.nlm.nih.gov/33638896" target="_blank" rel="noopener">PMID 33638896</a>) · Enomoto M et al., Stroke 2019 (<a href="https://pubmed.ncbi.nlm.nih.gov/30741623" target="_blank" rel="noopener">PMID 30741623</a>) · Japan Stroke Society Guideline 2021 (<a href="https://pubmed.ncbi.nlm.nih.gov/35443847" target="_blank" rel="noopener">PMID 35443847</a>) · инструкция Флертис (Farmak, UZ). Инструмент поддержки клинического решения — не заменяет клиническое суждение, инструкцию препарата и клинические рекомендации. При поддержке Farmak.</p>`;
+
+  return h;
+}
+
+function timelineBlock(bucket){
+  const marker=BUCKETS.find(b=>b.id===bucket).pos;
+  return `<div class="timeline-wrap">
+    <div class="tl-head"><span>Начало симптомов</span><span>Сейчас</span></div>
+    <div class="tl-track">
+      <div class="tl-seg z1"></div><div class="tl-seg z2"></div><div class="tl-seg z3"></div>
+      <div class="tl-marker" style="left:${marker}%"></div>
+    </div>
+    <div class="tl-labels"><span>0 ч</span><span>6 ч</span><span>24 ч</span><span>&gt;24 ч</span></div>
+    <div class="tl-note">Зелёная зона — максимальный шанс; жёлтая — пик оксидативного удара приближается; серая — окно закрыто</div>
+  </div>`;
+}
+
+function buildNote(bucket,severe,rep){
+  const bmap={early:'менее 6 часов',mid:'6–24 часа',late:'более 24 часов'};
+  let n=`КЛИНИЧЕСКАЯ ЗАМЕТКА · Окно на Флертис (эдаравон)\n`;
+  n+=`Время от начала симптомов: ${bmap[bucket]}.\n`;
+  n+=`Тяжесть очагового дефицита: ${severe===true?'выраженный':(severe===false?'лёгкий/умеренный':'не указано')}.\n`;
+  n+=`Реперфузия (тромболизис/тромбэктомия): ${rep==='yes'?'проведена':(rep==='no'?'не проведена':'не уточнена')}.\n`;
+  if(bucket==='late'){
+    n+=`Терапевтическое окно для старта Флертиса (≤24 ч) превышено.\n`;
+  } else {
+    n+=`Окно для старта Флертиса открыто (≤24 ч). Схема: 30 мг (1 амп. 20 мл, 1,5 мг/мл) в 100 мл NaCl, в/в инфузия 30 мин, 2 раза/сутки, 14 дней.\n`;
+    n+=`Обоснование: терапия должна успеть встать в ткань до пика оксидативного повреждения (6–24 ч от начала ишемии).\n`;
+  }
+  n+=`Осторожность: только чистый эдаравон; данные TASTE/TASTE-SL к Флертису не относятся.\n`;
+  n+=`Источники: Chen C et al. 2021 (PMID 33638896); Enomoto M et al., Stroke 2019 (PMID 30741623); Japan Stroke Society Guideline 2021 (PMID 35443847); инструкция Флертис (UZ).\n`;
+  n+=`Инструмент поддержки решения; не заменяет клиническое суждение и инструкцию препарата. При поддержке Farmak.`;
+  return n;
+}
+
+/* ============ SHARE ============ */
+function shareBlock(note){
+  window._note=note;
+  return `<div class="share-row">
+    <button class="prim" onclick="doShare()">${shareIco()} Поделиться</button>
+    <button onclick="doCopy()">${copyIco()} Копировать</button>
+  </div>
+  <div class="share-row" style="margin-top:0">
+    <button onclick="doTg()" style="color:#229ED9">${tgIco()} В Telegram</button>
+  </div>`;
+}
+async function doShare(){
+  const t=window._note;
+  if(navigator.share){try{await navigator.share({title:'Клиническая заметка · Farmak',text:t});}catch(e){}}
+  else{doCopy();}
+}
+function doCopy(){
+  const t=window._note;
+  if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>toast('Заметка скопирована')).catch(()=>fallbackCopy(t));}
+  else fallbackCopy(t);
+}
+function fallbackCopy(t){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Заметка скопирована');}catch(e){}document.body.removeChild(ta);}
+function doTg(){const t=encodeURIComponent(window._note);window.open('https://t.me/share/url?url='+encodeURIComponent(location.href)+'&text='+t,'_blank');}
+
+function resetTool(){state={bucket:null,severe:null,reperfusion:null};goIntro();}
+
+/* ============ icons ============ */
+function warnIco(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3L12 3z" stroke="#C0801A" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4M12 17h.01" stroke="#C0801A" stroke-width="2" stroke-linecap="round"/></svg>';}
+function infoIco(){return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#1c3a63" stroke-width="2"/><path d="M12 8h.01M12 11v5" stroke="#1c3a63" stroke-width="2" stroke-linecap="round"/></svg>';}
+function shareIco(){return '<svg viewBox="0 0 24 24" fill="none"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 15V4M8 8l4-4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+function copyIco(){return '<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15V5a2 2 0 012-2h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';}
+function tgIco(){return '<svg viewBox="0 0 24 24" fill="none"><path d="M21 4L3 11l5 2 2 6 3-4 5 4 3-15z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';}
+
+/* ============ MODAL ============ */
+function openModal(){
+  $('sheet').innerHTML=`<h4>Окно на Флертис</h4>
+    <p>Инструмент поддержки решения для тяжёлого острого ишемического инсульта (ОИИ) в первые часы — оценивает, открыто ли терапевтическое окно для старта Флертиса (эдаравон), и даёт схему введения.</p>
+    <ul>
+      <li>Окно для старта — ≤24 часа от начала симптомов (не 72 часа).</li>
+      <li>Платформа Флертиса — тяжёлый ОИИ, большой объём поражения, кардиоэмболический инсульт.</li>
+      <li>Только чистый эдаравон — данные TASTE/TASTE-SL (эдаравон + декскамфора) не относятся к Флертису.</li>
+    </ul>
+    <p style="color:var(--mute)">Инструмент поддержки клинического решения. Не заменяет суждение врача, инструкцию препарата и действующие клинические рекомендации.</p>
+    <div class="src">Chen C et al. 2021 (PMID 33638896) · Enomoto M et al., Stroke 2019 (PMID 30741623) · Japan Stroke Society Guideline 2021 (PMID 35443847) · Инструкция Флертис (UZ)<br>При поддержке Farmak</div>
+    <button class="close" onclick="closeModal()">Понятно</button>`;
+  $('modal').classList.add('open');
+}
+function closeModal(){$('modal').classList.remove('open');}
+
+/* ============ INIT ============ */
+goIntro();
+</script>
+</body>
+</html>
