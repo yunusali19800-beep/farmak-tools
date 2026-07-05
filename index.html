@@ -72,22 +72,7 @@ body{font-family:var(--ui);color:var(--ink);background:var(--paper);-webkit-font
 <body>
 <div class="app">
 
-  <div class="gate" id="gate">
-    <div class="gate-inner">
-      <div class="glyph">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 8v6M9 11h6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </div>
-      <h2>Клинические инструменты Farmak</h2>
-      <p>Материалы содержат информацию о рецептурных препаратах и предназначены только для специалистов здравоохранения.</p>
-      <div class="gbtns">
-        <button class="yes" onclick="document.getElementById('gate').classList.add('hidden');document.getElementById('main').classList.remove('hidden')">Да, я медицинский работник</button>
-        <button class="no" onclick="this.parentElement.insertAdjacentHTML('afterend','<p style=\'margin-top:18px;color:rgba(255,255,255,.8);font-size:12.5px\'>Доступ только для медицинских работников.</p>')">Нет</button>
-      </div>
-      <div class="fine">Инструменты поддержки клинического решения. Не заменяют клиническое суждение врача, инструкцию препарата и действующие рекомендации.</div>
-    </div>
-  </div>
-
-  <div id="main" class="hidden">
+  <div id="main">
     <div class="top">
       <div class="brandmark">
         <div class="logo-dot"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/></svg></div>

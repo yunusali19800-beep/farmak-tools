@@ -225,27 +225,8 @@ h1.title{font-family:var(--display);font-weight:600;font-size:25px;line-height:1
 <body>
 <div class="app">
 
-  <!-- HCP GATE -->
-  <div class="gate" id="gate">
-    <div class="gate-inner">
-      <div class="glyph">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 8v6M9 11h6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </div>
-      <h2>Инструмент для медицинских работников</h2>
-      <p>Материал содержит информацию о рецептурных препаратах и предназначен только для специалистов здравоохранения.</p>
-      <div class="gbtns">
-        <button class="yes" onclick="passGate()">Да, я медицинский работник</button>
-        <button class="no" onclick="denyGate()">Нет</button>
-      </div>
-      <div class="gate-block" id="gblock">
-        <p style="margin-top:22px;color:rgba(255,255,255,.85)">Доступ к материалу возможен только для медицинских работников.</p>
-      </div>
-      <div class="fine">Инструмент поддержки клинического решения. Не заменяет клиническое суждение врача, инструкцию препарата и действующие рекомендации.</div>
-    </div>
-  </div>
-
   <!-- HEADER -->
-  <div class="top hidden" id="top">
+  <div class="top" id="top">
     <div class="brandrow">
       <div class="mark">
         <span class="mono-badge" id="hbadge">ГЕМОСТАЗ</span>
@@ -352,8 +333,7 @@ function setSteps(n,gm){const s=$('steps');s.className='steps'+(gm?' gm':'');['s
 function toast(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1600);}
 
 /* ================= GATE ================= */
-function passGate(){$('gate').classList.add('hidden');$('top').classList.remove('hidden');route();}
-function denyGate(){$('gblock').style.display='block';}
+
 
 /* deep-link: #tromboz / #krovotechenie */
 function route(){
@@ -680,7 +660,8 @@ function openModal(){
 }
 function closeModal(){$('modal').classList.remove('open');}
 
-window.addEventListener('hashchange',()=>{if(!$('gate').classList.contains('hidden'))return;route();});
+window.addEventListener('hashchange',route);
+route();
 </script>
 </body>
 </html>
