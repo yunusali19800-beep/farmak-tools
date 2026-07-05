@@ -416,8 +416,6 @@ function renderResult(){
     <div class="note-mini">Платформа Флертиса: тяжёлый ОИИ, первые часы, большой объём поражения, кардиоэмболический инсульт, высокий риск тяжёлого исхода.</div>
   </div>`;
 
-  h+=`<div class="flag">${warnIco()}<div><b>Осторожность:</b> только чистый эдаравон. Данные TASTE/TASTE-SL (эдаравон + декскамфора) к Флертису не относятся.</div></div>`;
-
   const note=buildNote(b,severe,rep);
   h+=shareBlock(note);
   h+=`<div style="text-align:center;margin:8px 0 4px"><button class="btn-ghost" style="background:none;border:none;color:var(--ink-soft);font-weight:700;padding:12px 4px;cursor:pointer;font-size:13.5px;font-family:var(--ui)" onclick="resetTool()">↺ новый пациент</button></div>`;
