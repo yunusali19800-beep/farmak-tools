@@ -108,6 +108,18 @@ body{font-family:var(--ui);color:var(--ink);background:var(--paper);-webkit-font
     </div>
   </div>
 </div>
+<!-- Netlify Forms: скрытая форма для авто-детекта схемы аналитики сканов -->
+<form name="scan-log" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="scan-log" />
+  <input name="tool" />
+  <input name="screen" />
+  <input name="src" />
+  <input name="device" />
+  <input name="ts" />
+  <input name="page" />
+  <input name="bot-field" />
+</form>
+
 <script src="assets/track.js"></script>
 <script>if(window.FarmakTrack)FarmakTrack.log('hub','index');</script>
 </body>

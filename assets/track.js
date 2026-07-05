@@ -31,15 +31,19 @@
   window.FarmakTrack = {
     log: function (tool, screen) {
       try {
-        fetch("/.netlify/functions/log-scan", {
+        var body = new URLSearchParams({
+          "form-name": "scan-log",
+          tool: tool || "",
+          screen: screen || "",
+          src: getSrc(),
+          device: getDevice(),
+          ts: String(Date.now()),
+          page: location.pathname
+        }).toString();
+        fetch("/", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            tool: tool || "",
-            screen: screen || "",
-            src: getSrc(),
-            device: getDevice()
-          })
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: body
         }).catch(function () {});
       } catch (e) {}
     }
