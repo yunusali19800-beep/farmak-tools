@@ -107,6 +107,11 @@ h1.title{font-family:var(--display);font-weight:600;font-size:24px;line-height:1
 .opt-row{display:flex;gap:10px}
 .opt-btn{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:13px 8px;text-align:center;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;box-shadow:var(--sh)}
 .opt-btn.on{border-color:var(--navy);background:var(--navy);color:#fff}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11.5px;font-weight:700;color:var(--ink-soft);margin-bottom:5px}
+.inwrap{display:flex;align-items:center;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;box-shadow:var(--sh)}
+.inwrap input{border:none;outline:none;font-size:15px;font-weight:700;color:var(--ink);width:100%;font-family:var(--ui);background:transparent}
+.inwrap .unit{font-size:12px;color:var(--mute);font-weight:600;white-space:nowrap}
 
 /* ---------- NEUROCARD SYSTEM (result) ---------- */
 .nk-row{display:flex;gap:8px;margin-bottom:16px}
@@ -193,7 +198,7 @@ h1.title{font-family:var(--display);font-weight:600;font-size:24px;line-height:1
 function $(id){return document.getElementById(id);}
 
 let step=0;
-let patient={gender:null, age:null, risk:{ag:false,ath:false,dm:false,ihd:false}};
+let patient={gender:null, age:null, stazh:null, risk:{ag:false,ath:false,dm:false,ihd:false}};
 let sym={forget:false,evening:false,apathy:false,labile:false,anxious:false,tired:false};
 let compensated=null; // true/false
 let ctx={setting:'stationary', dysphagia:false}; // 'stationary' | 'ambulatory'
@@ -219,15 +224,15 @@ function render(){
   return renderFollowUp();
 }
 
-/* ---------------- SCREEN 0 — врач сам строит портрет пациента ---------------- */
+/* ---------------- SCREEN 0 — врач сам строит подробный портрет пациента ---------------- */
 function renderHook(){
   setSteps(0);
   const g=patient.gender, a=patient.age;
   const ready = g && a;
   const h=`<div class="screen">
     <div class="eyebrow">Ваш пациент, не готовый пример</div>
-    <h1 class="title">С кем вы сейчас работаете?*</h1>
-    <p class="lead">Отметьте то, что подходит вашему пациенту — дальше пойдём по его реальной картине.</p>
+    <h1 class="title">С кем вы сейчас работаете?</h1>
+    <p class="lead">Введите реальные параметры вашего пациента — дальше пойдём по его картине.</p>
 
     <div class="opt-group">
       <div class="opt-title">Пол</div>
@@ -237,13 +242,14 @@ function renderHook(){
       </div>
     </div>
 
-    <div class="opt-group">
-      <div class="opt-title">Возраст</div>
-      <div class="opt-row">
-        <div class="opt-btn ${a==='50-65'?'on':''}" onclick="setPatient('age','50-65')">50–65</div>
-        <div class="opt-btn ${a==='65-75'?'on':''}" onclick="setPatient('age','65-75')">65–75</div>
-        <div class="opt-btn ${a==='75+'?'on':''}" onclick="setPatient('age','75+')">75+</div>
-      </div>
+    <div class="field">
+      <label>Возраст</label>
+      <div class="inwrap"><input id="p-age" inputmode="numeric" placeholder="—" value="${a||''}" oninput="patient.age=this.value;updateReady0()"><span class="unit">лет</span></div>
+    </div>
+
+    <div class="field">
+      <label>Стаж АГ/атеросклероза (если есть)</label>
+      <div class="inwrap"><input id="p-stazh" inputmode="numeric" placeholder="—" value="${patient.stazh||''}" oninput="patient.stazh=this.value"><span class="unit">лет</span></div>
     </div>
 
     <div class="opt-group">
@@ -258,10 +264,16 @@ function renderHook(){
     <p class="lead" style="margin-top:-4px;font-size:11px">*Портрет собирается из ваших ответов — это не готовый кейс.</p>
   </div>
   <div class="cta-fixed">
-    <button ${ready?'':'disabled'} onclick="step=1;renderApp()">Дальше — жалобы →</button>
-    ${ready?'':'<div class="hint">Выберите пол и возраст</div>'}
+    <button id="cta0" ${ready?'':'disabled'} onclick="step=1;renderApp()">Дальше — жалобы →</button>
+    <div class="hint" id="hint0" ${ready?'style="display:none"':''}>Укажите пол и возраст</div>
   </div>`;
   return h;
+}
+function updateReady0(){
+  const ready = patient.gender && patient.age;
+  const btn=$('cta0'), hint=$('hint0');
+  if(btn){ btn.disabled=!ready; }
+  if(hint){ hint.style.display = ready?'none':'block'; }
 }
 function setPatient(k,v){ patient[k]=v; renderApp(); }
 function toggleRisk(k){ patient.risk[k]=!patient.risk[k]; renderApp(); }
@@ -479,7 +491,7 @@ function renderFollowUp(){
 }
 
 function resetAll(){
-  patient={gender:null,age:null,risk:{ag:false,ath:false,dm:false,ihd:false}};
+  patient={gender:null,age:null,stazh:null,risk:{ag:false,ath:false,dm:false,ihd:false}};
   sym={forget:false,evening:false,apathy:false,labile:false,anxious:false,tired:false};
   compensated=null;
   ctx={setting:'stationary',dysphagia:false};
@@ -493,8 +505,9 @@ function buildNote(){
   const dy = ctx.dysphagia? 'есть дисфагия':'без дисфагии';
   const genderText = patient.gender==='f'?'Женщина':'Мужчина';
   const riskList=[patient.risk.ag&&'АГ',patient.risk.ath&&'атеросклероз',patient.risk.dm&&'СД2',patient.risk.ihd&&'ИБС'].filter(Boolean).join(', ')||'не отмечен';
+  const stazhText = patient.stazh? ` (стаж ${patient.stazh} лет)`:'';
   return `Клиническая заметка · ХИМ, терапевтический приём
-Пациент: ${genderText}, ${patient.age||'—'} лет. Фон: ${riskList}. Основной диагноз компенсирован, жалобы — ${chosenSym}. Контекст: ${setting}, ${dy}.
+Пациент: ${genderText}, ${patient.age||'—'} лет. Фон: ${riskList}${stazhText}. Основной диагноз компенсирован, жалобы — ${chosenSym}. Контекст: ${setting}, ${dy}.
 
 Церебральная поддержка на трёх уровнях (рассмотреть у этого пациента):
 · Глиятон (функция) — ${ctx.setting==='stationary'?'старт 1000 мг/сут стационар → ':''}${ctx.dysphagia?'оральный р-р 600 мг×2/сут':'капсулы 400 мг, 800–1200 мг/сут'}

@@ -64,6 +64,11 @@ h1.title{font-family:var(--display);font-weight:600;font-size:24px;line-height:1
 .opt-row{display:flex;gap:9px}
 .opt-btn{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:13px 8px;text-align:center;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;box-shadow:var(--sh)}
 .opt-btn.on{border-color:var(--navy);background:var(--navy);color:#fff}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11.5px;font-weight:700;color:var(--ink-soft);margin-bottom:5px}
+.inwrap{display:flex;align-items:center;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:11px 13px;box-shadow:var(--sh)}
+.inwrap input{border:none;outline:none;font-size:15px;font-weight:700;color:var(--ink);width:100%;font-family:var(--ui);background:transparent}
+.inwrap .unit{font-size:12px;color:var(--mute);font-weight:600;white-space:nowrap}
 .timeline .seg{flex:1;height:6px;border-radius:4px;background:var(--line)}
 .timeline .seg.now{background:var(--navy)}
 .tl-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--mute);margin-top:5px;font-weight:600}
@@ -198,7 +203,7 @@ function $(id){return document.getElementById(id);}
 
 let sel={fx:false,li:false};
 let step=0;
-let patient={gender:null, period:null}; // period: 'acute'|'current'|'later'
+let patient={gender:null, period:null, side:null, stazh:null}; // period: 'acute'|'current'|'later'
 
 function setSteps(n){
   document.querySelectorAll('.steps i').forEach((el,i)=>{
@@ -216,13 +221,12 @@ function render(){
 
 function renderPortrait(){
   setSteps(0);
-  const g=patient.gender, p=patient.period;
+  const g=patient.gender, p=patient.period, side=patient.side;
   const ready = g && p;
-  const periodLbl = p==='acute'? 'первые дни после ОИИ' : p==='later'? 'поздний восстановительный период' : '10–14-е сутки после ОИИ';
   const h=`<div class="screen">
     <div class="eyebrow">Ваш пациент, не готовый пример</div>
     <h1 class="title">С кем вы сейчас работаете?</h1>
-    <p class="lead">Отметьте, что подходит вашему пациенту — дальше пойдём по его реальной картине.</p>
+    <p class="lead">Введите реальные параметры пациента — дальше пойдём по его картине.</p>
 
     <div class="opt-group">
       <div class="opt-title">Пол</div>
@@ -239,6 +243,19 @@ function renderPortrait(){
         <div class="opt-btn ${p==='current'?'on':''}" onclick="setPatient('period','current')">10–14 сут</div>
         <div class="opt-btn ${p==='later'?'on':''}" onclick="setPatient('period','later')">Позже</div>
       </div>
+    </div>
+
+    <div class="opt-group">
+      <div class="opt-title">Сторона поражения (необязательно)</div>
+      <div class="opt-row">
+        <div class="opt-btn ${side==='r'?'on':''}" onclick="setPatient('side','r')">Правая</div>
+        <div class="opt-btn ${side==='l'?'on':''}" onclick="setPatient('side','l')">Левая</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Стаж АГ (если есть)</label>
+      <div class="inwrap"><input id="p-stazh" inputmode="numeric" placeholder="—" value="${patient.stazh||''}" oninput="patient.stazh=this.value"><span class="unit">лет</span></div>
     </div>
 
     ${ready?`<div class="portrait">
@@ -360,8 +377,12 @@ function renderResults(){
 }
 
 function buildNote(){
+  const genderText = patient.gender==='m'?'Мужчина':'Женщина';
+  const periodText = patient.period==='acute'?'первые дни после ОИИ':patient.period==='later'?'поздний восстановительный период':'10–14-е сутки после ОИИ';
+  const sideText = patient.side==='r'?', правосторонний очаг':patient.side==='l'?', левосторонний очаг':'';
+  const stazhText = patient.stazh?`, АГ ${patient.stazh} лет`:'';
   let n=`КЛИНИЧЕСКАЯ ЗАМЕТКА · Ранний восстановительный период после ОИИ\n`;
-  n+=`Пациент: 6-е сутки после ишемического инсульта, подвижность снижена.\n\n`;
+  n+=`Пациент: ${genderText}, ${periodText}${sideText}${stazhText}.\n\n`;
   if(sel.fx){
     n+=`ЗАЩИТА ОТ ВТЭ — Фленокс 4000: 40 мг п/к 1 р/сут, до 14 дней. Эноксапарин снизил риск ВТЭ на 43% vs НФГ (PREVAIL, PMID 17448820).\n\n`;
   }
@@ -434,7 +455,7 @@ function renderSummary(){
     <button class="prim" onclick="doShare()">${shareIco()} Поделиться</button>
     <button onclick="doCopy()">${copyIco()} Копировать</button>
   </div>
-  <div style="text-align:center;margin:14px 0 4px"><button class="btn-ghost" onclick="sel={fx:false,li:false};patient={gender:null,period:null};step=0;renderApp()">↺ новый пациент</button></div>
+  <div style="text-align:center;margin:14px 0 4px"><button class="btn-ghost" onclick="sel={fx:false,li:false};patient={gender:null,period:null,side:null,stazh:null};step=0;renderApp()">↺ новый пациент</button></div>
   <p class="disc">Источники: Sherman DG et al., PREVAIL, Lancet 2007 (PMID 17448820) · Alvarez-Sabín J et al., 2016 (PMID 26999113) · AVERT Trial, Lancet 2015 · AHA/ASA, Cochrane Collaboration · EXCITE Trial, Wolf et al., 2006 · Инструкции Фленокс 4000, Лира — Farmak. Инструмент поддержки клинического решения — не заменяет клиническое суждение, инструкцию препарата и действующие клинические рекомендации. При поддержке Farmak.</p>
   </div>`;
   return h;
