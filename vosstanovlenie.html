@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1A2E5A">
+<title>Ранний восстановительный период · Farmak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A2333; --ink-soft:#55607A; --mute:#8A93A8;
+  --paper:#EEF1F7; --card:#FFFFFF; --line:#DDE3EE; --line-soft:#EAEEF5;
+  --navy:#1A2E5A;
+  /* Фленокс — оранжевый/красный/волна */
+  --fx:#DE5C0C; --fx-deep:#CE3B14; --fx-tint:#FCEBDD; --fx-wave:#B87CAD;
+  /* Лира — маджента-розовый */
+  --li:#C6386F; --li-deep:#9E2856; --li-tint:#FBE4ED;
+  --ok:#1FA463; --ok-tint:#E1F3EA;
+  --warn:#C0801A; --warn-tint:#F7ECD6;
+  --display:'Spectral',Georgia,serif;
+  --ui:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --r:18px; --r-sm:12px;
+  --sh:0 1px 2px rgba(26,35,51,.05),0 10px 30px rgba(26,35,51,.09);
+  --sh-lg:0 6px 16px rgba(26,35,51,.10),0 20px 50px rgba(26,35,51,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:var(--ui);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;line-height:1.45;overscroll-behavior-y:none}
+.app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;display:flex;flex-direction:column;background:var(--paper)}
+.hidden{display:none!important}
+button{font-family:var(--ui)}
+
+/* ---------- HCP GATE ---------- */
+.gate{position:fixed;inset:0;z-index:100;background:linear-gradient(160deg,#1A2E5A,#3A1030 75%);display:flex;align-items:center;justify-content:center;padding:26px}
+.gate-inner{max-width:400px;text-align:center;color:#fff}
+.gate .glyph{width:58px;height:58px;margin:0 auto 20px;border-radius:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);display:grid;place-items:center}
+.gate h2{font-family:var(--display);font-weight:600;font-size:24px;margin:0 0 10px}
+.gate p{font-size:13.5px;color:rgba(255,255,255,.8);margin:0 0 26px;line-height:1.5}
+.gate .gbtns{display:flex;flex-direction:column;gap:11px}
+.gate button{border:none;border-radius:13px;padding:15px;font-size:15px;font-weight:700;cursor:pointer}
+.gate .yes{background:linear-gradient(90deg,var(--fx),var(--li));color:#fff}
+.gate .no{background:transparent;color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.25);font-weight:600}
+.gate .fine{font-size:11px;color:rgba(255,255,255,.5);margin-top:20px;line-height:1.5}
+.gate-block{display:none}
+
+/* ---------- HEADER ---------- */
+.top{position:sticky;top:0;z-index:20;background:rgba(238,241,247,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:12px 18px 11px}
+.brandrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mark{display:flex;align-items:center;gap:8px;min-width:0}
+.mono-badge{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--fx-deep);background:var(--fx-tint);padding:4px 8px;border-radius:7px;white-space:nowrap}
+.mono-badge.li{color:var(--li-deep);background:var(--li-tint)}
+.wordmark{font-family:var(--display);font-weight:700;font-size:16px;color:var(--navy);letter-spacing:.2px;line-height:1.05}
+.wordmark small{display:block;font-family:var(--ui);font-size:9.5px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--mute)}
+.iinfo{border:1px solid var(--line);background:var(--card);color:var(--navy);width:32px;height:32px;border-radius:10px;font-weight:700;font-size:15px;display:grid;place-items:center;cursor:pointer;flex:0 0 auto}
+.steps{display:flex;gap:5px;margin-top:11px}
+.steps i{height:3px;flex:1;border-radius:3px;background:var(--line);transition:background .3s}
+.steps i.on{background:linear-gradient(90deg,var(--fx),var(--li))} .steps i.done{background:var(--navy)}
+
+.screen{flex:1;padding:18px 18px 130px;animation:fade .32s ease}
+@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;margin:2px 0 8px;color:var(--navy)}
+h1.title{font-family:var(--display);font-weight:600;font-size:24px;line-height:1.18;margin:0 0 7px;letter-spacing:-.2px;color:var(--ink)}
+.lead{font-size:13.5px;color:var(--ink-soft);margin:0 0 18px}
+
+/* ---------- PORTRAIT CARD ---------- */
+.portrait{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:17px 16px;margin-bottom:16px;box-shadow:var(--sh)}
+.portrait .prow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:13px}
+.portrait .prow:last-child{border-bottom:none}
+.portrait .prow .k{color:var(--ink-soft)}
+.portrait .prow .v{font-weight:700;color:var(--ink);text-align:right;max-width:62%}
+.timeline{display:flex;align-items:center;gap:6px;margin-top:14px}
+.timeline .seg{flex:1;height:6px;border-radius:4px;background:var(--line)}
+.timeline .seg.now{background:var(--navy)}
+.tl-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--mute);margin-top:5px;font-weight:600}
+.anchor-line{background:var(--navy);color:#fff;border-radius:var(--r-sm);padding:12px 14px;font-size:13px;font-weight:700;text-align:center;margin-top:14px;line-height:1.4}
+
+/* ---------- CHECKLIST ---------- */
+.check-card{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:15px 14px;margin-bottom:12px;cursor:pointer;transition:border-color .15s,box-shadow .15s;box-shadow:var(--sh)}
+.check-card[data-track="fx"].on{border-color:var(--fx)}
+.check-card[data-track="li"].on{border-color:var(--li)}
+.check-card .box{width:24px;height:24px;border-radius:7px;border:2px solid var(--line);flex:0 0 auto;display:grid;place-items:center;margin-top:1px;transition:all .15s}
+.check-card[data-track="fx"].on .box{background:var(--fx);border-color:var(--fx)}
+.check-card[data-track="li"].on .box{background:var(--li);border-color:var(--li)}
+.check-card .box svg{opacity:0;transition:opacity .12s}
+.check-card.on .box svg{opacity:1}
+.check-card .ctext h4{margin:0 0 4px;font-size:14.5px;font-weight:800;color:var(--ink)}
+.check-card .ctext p{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.5}
+.check-card .flagdot{display:inline-block;font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.4px;padding:3px 7px;border-radius:6px;margin-top:8px}
+.check-card[data-track="fx"] .flagdot{color:var(--fx-deep);background:var(--fx-tint)}
+.check-card[data-track="li"] .flagdot{color:var(--li-deep);background:var(--li-tint)}
+
+.cta-fixed{position:fixed;left:0;right:0;bottom:0;z-index:15;max-width:480px;margin:0 auto;padding:14px 18px 20px;background:linear-gradient(0deg,var(--paper) 60%,transparent)}
+.cta-fixed button{width:100%;border:none;border-radius:15px;padding:16px;font-size:15.5px;font-weight:800;color:#fff;cursor:pointer;box-shadow:var(--sh-lg);background:linear-gradient(90deg,var(--fx),var(--li))}
+.cta-fixed button:disabled{opacity:.4;cursor:not-allowed}
+.cta-fixed .hint{text-align:center;font-size:11px;color:var(--mute);margin-top:8px}
+
+.backrow{display:flex;align-items:center;margin:-2px 0 10px}
+.backrow button{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--ink-soft);font-size:13px;font-weight:600;cursor:pointer;padding:5px 0}
+
+/* ---------- RESULT CARDS ---------- */
+.rescard{border-radius:var(--r);padding:0;margin-bottom:16px;overflow:hidden;box-shadow:var(--sh-lg);border:1px solid var(--line)}
+.rescard .rhead{padding:15px 16px 13px;color:#fff}
+.rescard.fx .rhead{background:linear-gradient(120deg,var(--fx),var(--fx-deep))}
+.rescard.li .rhead{background:linear-gradient(120deg,var(--li),var(--li-deep))}
+.rescard .rhead .rtag{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.85}
+.rescard .rhead h3{margin:5px 0 0;font-size:19px;font-weight:800;font-family:var(--display)}
+.rescard .rbody{background:var(--card);padding:15px 16px}
+.rescard .mech{font-size:12.5px;color:var(--ink-soft);line-height:1.55;margin:0 0 13px;padding-bottom:13px;border-bottom:1px dashed var(--line)}
+.dose-row{display:flex;justify-content:space-between;padding:7px 0;font-size:13px;border-bottom:1px solid var(--line-soft)}
+.dose-row:last-child{border-bottom:none}
+.dose-row .k{color:var(--ink-soft)}
+.dose-row .v{font-weight:800;color:var(--ink);text-align:right}
+.dose-row.hl .v{color:var(--fx-deep)}
+.rescard.li .dose-row.hl .v{color:var(--li-deep)}
+.step-note{margin-top:11px;background:var(--paper);border-radius:10px;padding:10px 11px;font-size:11.5px;color:var(--ink-soft);line-height:1.5}
+.src-line{margin-top:12px;font-size:11px;color:var(--mute);line-height:1.5}
+.src-line a{color:var(--navy);font-weight:700;text-decoration:none;border-bottom:1px solid var(--line)}
+
+/* ---------- STEPPED SCHEME (always shown in results) ---------- */
+.scheme{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;margin-bottom:16px;box-shadow:var(--sh)}
+.scheme h4{margin:0 0 11px;font-size:13.5px;font-weight:800;color:var(--navy)}
+.sc-track{display:flex;align-items:center;gap:0;margin-bottom:9px}
+.sc-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.sc-bar{flex:1;height:5px;border-radius:3px}
+.sc-lbl{font-size:11px;font-weight:700;padding:0 8px;white-space:nowrap}
+.sc-row{display:flex;align-items:center;margin-bottom:6px}
+.sc-row .name{width:64px;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;flex:0 0 64px}
+.sc-row.fx .name{color:var(--fx-deep)} .sc-row.li .name{color:var(--li-deep)}
+.sc-row .track{flex:1;height:8px;border-radius:5px;background:var(--line-soft);position:relative;overflow:hidden}
+.sc-row.fx .track .fill{position:absolute;left:0;top:0;bottom:0;width:46%;background:linear-gradient(90deg,var(--fx),var(--fx-deep));border-radius:5px}
+.sc-row.li .track .fill{position:absolute;left:0;top:0;bottom:0;width:100%;background:linear-gradient(90deg,var(--li),var(--li-deep));border-radius:5px}
+.sc-foot{display:flex;justify-content:space-between;font-size:9.5px;color:var(--mute);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-top:6px}
+.scheme .punch{margin-top:12px;background:var(--navy);color:#fff;border-radius:10px;padding:11px 12px;font-size:12.5px;font-weight:700;text-align:center;line-height:1.4}
+
+/* ---------- SHARE ---------- */
+.share-row{display:flex;gap:9px;margin-top:4px}
+.share-row button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px;font-size:13px;font-weight:700;color:var(--navy);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
+.share-row button.prim{background:var(--navy);color:#fff;border-color:var(--navy)}
+.share-row svg{width:16px;height:16px}
+
+.btn-ghost{background:none;border:1px solid var(--line);color:var(--ink-soft);font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:11px;cursor:pointer}
+.disc{font-size:10.5px;color:var(--mute);line-height:1.6;margin:16px 2px 0}
+.disc a{color:var(--mute)}
+
+/* ---------- MODAL ---------- */
+.modal{position:fixed;inset:0;z-index:90;background:rgba(20,26,40,.55);display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.sheet{max-width:480px;width:100%;background:#fff;border-radius:20px 20px 0 0;padding:22px 20px 26px;max-height:80vh;overflow-y:auto}
+.sheet h4{font-family:var(--display);font-size:18px;margin:0 0 10px;color:var(--navy)}
+.sheet p{font-size:13px;color:var(--ink-soft);line-height:1.6}
+.sheet ul{padding-left:18px;font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+.sheet .src{font-size:10.5px;color:var(--mute);margin-top:12px;line-height:1.6}
+.sheet .close{width:100%;border:none;background:var(--navy);color:#fff;border-radius:13px;padding:14px;font-weight:700;font-size:14px;margin-top:14px;cursor:pointer}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 18px;border-radius:12px;font-size:12.5px;font-weight:700;z-index:200;box-shadow:var(--sh-lg);opacity:0;pointer-events:none;transition:opacity .25s}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HCP GATE -->
+  <div class="gate" id="gate">
+    <div class="gate-inner">
+      <div class="glyph"><svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M4 8l8-5 8 5M4 8v9l8 5 8-5V8" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+      <h2>Инструмент для медицинских специалистов</h2>
+      <p>Материал содержит клиническую и дозировочную информацию, предназначенную для врачей и медицинских представителей. Подтвердите, что вы медицинский специалист.</p>
+      <div class="gbtns">
+        <button class="yes" onclick="closeGate()">Я медицинский специалист</button>
+        <button class="no" onclick="location.href='https://www.farmak.ua'">Я не медицинский специалист</button>
+      </div>
+      <div class="fine">При поддержке Farmak. Инструмент поддержки клинического решения — не заменяет инструкцию препарата и клинические рекомендации.</div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="top">
+    <div class="brandrow">
+      <div class="mark">
+        <span class="mono-badge">ФЛЕНОКС 4000</span>
+        <span class="mono-badge li">ЛИРА</span>
+      </div>
+      <div class="iinfo" onclick="openModal()">i</div>
+    </div>
+    <div class="steps"><i class="s0"></i><i class="s1"></i><i class="s2"></i></div>
+  </div>
+
+  <div id="root"></div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="sheet" id="sheet"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="assets/track.js"></script>
+<script>
+function $(id){return document.getElementById(id);}
+function closeGate(){$('gate').style.display='none';}
+
+let sel={fx:false,li:false};
+let step=0;
+
+function setSteps(n){
+  document.querySelectorAll('.steps i').forEach((el,i)=>{
+    el.className = i<n?'done':(i===n?'on':'');
+  });
+}
+
+function render(){
+  if(step===0) return renderPortrait();
+  if(step===1) return renderCheck();
+  return renderResults();
+}
+
+function renderPortrait(){
+  setSteps(0);
+  const h=`<div class="screen">
+    <div class="eyebrow">Ранний восстановительный период</div>
+    <h1 class="title">6-е сутки после инсульта. Острый период позади.</h1>
+    <p class="lead">Что происходит с пациентом сейчас — и что из этого не закрывает стандартная вторичная профилактика?</p>
+
+    <div class="portrait">
+      <div class="prow"><span class="k">Пациент</span><span class="v">Мужчина, 62 года</span></div>
+      <div class="prow"><span class="k">Диагноз</span><span class="v">Ишемический инсульт, бассейн СМА</span></div>
+      <div class="prow"><span class="k">Статус</span><span class="v">Правосторонний гемипарез, подвижность снижена</span></div>
+      <div class="prow"><span class="k">Течение</span><span class="v">Острый период позади, восстановление уже идёт</span></div>
+      <div class="timeline">
+        <div class="seg"></div><div class="seg now"></div><div class="seg"></div>
+      </div>
+      <div class="tl-labels"><span>Острый период</span><span>Сейчас · 10–14 сут</span><span>Реабилитация</span></div>
+      <div class="anchor-line">Именно в эти 10–14 суток закладывается функциональный исход пациента</div>
+    </div>
+
+    <p class="lead" style="margin-top:4px">Вторичная профилактика (антиагрегант, статин, контроль АД) уже назначена — но она не закрывает всё, что происходит с пациентом прямо сейчас.</p>
+  </div>
+  <div class="cta-fixed"><button onclick="step=1;renderApp()">Смотреть, что не закрыто →</button></div>`;
+  return h;
+}
+
+function renderCheck(){
+  setSteps(1);
+  const h=`<div class="screen">
+    <div class="backrow"><button onclick="step=0;renderApp()">‹ Назад к пациенту</button></div>
+    <div class="eyebrow">Отметьте то, что верно для вашего пациента</div>
+    <h1 class="title">Что из этого есть у пациента сейчас?</h1>
+    <p class="lead">Это независимые клинические вопросы — может быть верным один, оба или ни одного.</p>
+
+    <div class="check-card ${sel.fx?'on':''}" data-track="fx" onclick="toggle('fx')">
+      <div class="box">${checkIco()}</div>
+      <div class="ctext">
+        <h4>Подвижность снижена</h4>
+        <p>Постельный/палатный режим, гемипарез ограничивает движение — сохраняется венозный стаз.</p>
+        <span class="flagdot">РИСК ВТЭ</span>
+      </div>
+    </div>
+
+    <div class="check-card ${sel.li?'on':''}" data-track="li" onclick="toggle('li')">
+      <div class="box">${checkIco()}</div>
+      <div class="ctext">
+        <h4>Пациент переходит к выписке</h4>
+        <p>Восстановление структуры нейрона не заканчивается в стационаре — нужна опора на весь путь до амбулаторного этапа.</p>
+        <span class="flagdot">НЕЙРОРЕПАРАЦИЯ</span>
+      </div>
+    </div>
+  </div>
+  <div class="cta-fixed">
+    <button ${(!sel.fx&&!sel.li)?'disabled':''} onclick="step=2;renderApp()">Показать протокол →</button>
+    <div class="hint">${(!sel.fx&&!sel.li)?'Отметьте хотя бы один пункт':'Отмечено: '+((sel.fx?1:0)+(sel.li?1:0))+' из 2'}</div>
+  </div>`;
+  return h;
+}
+
+function toggle(k){sel[k]=!sel[k];renderApp();}
+
+function checkIco(){return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+
+function renderResults(){
+  setSteps(2);
+  let h=`<div class="screen">
+    <div class="backrow"><button onclick="step=1;renderApp()">‹ Изменить отметки</button></div>
+    <div class="eyebrow">Протокол раннего восстановительного периода</div>
+    <h1 class="title">Что закрыть у этого пациента</h1>`;
+
+  if(sel.fx){
+    h+=`<div class="rescard fx">
+      <div class="rhead">
+        <div class="rtag">Защита · венозный стаз</div>
+        <h3>Фленокс 4000</h3>
+      </div>
+      <div class="rbody">
+        <p class="mech">Сниженная подвижность → венозный стаз → риск ВТЭ и ТЭЛА. Стандартная сосудистая профилактика (антиагрегант) на это не влияет — механизм тромбообразования другой.</p>
+        <div class="dose-row hl"><span class="k">Доза</span><span class="v">40 мг п/к 1 р/сут</span></div>
+        <div class="dose-row"><span class="k">Длительность</span><span class="v">до 14 дней</span></div>
+        <div class="dose-row"><span class="k">Эффект</span><span class="v">−43% риск ВТЭ</span></div>
+        <div class="step-note">Эноксапарин 40 мг снизил риск ВТЭ на 43% по сравнению с нефракционированным гепарином у иммобилизованных пациентов (PREVAIL).</div>
+        <div class="src-line">Sherman DG et al., PREVAIL, Lancet 2007 · <a href="https://pubmed.ncbi.nlm.nih.gov/17448820/" target="_blank" rel="noopener">PMID 17448820</a></div>
+      </div>
+    </div>`;
+  }
+
+  if(sel.li){
+    h+=`<div class="rescard li">
+      <div class="rhead">
+        <div class="rtag">Структура · нейрорепарация</div>
+        <h3>Лира</h3>
+      </div>
+      <div class="rbody">
+        <p class="mech">Повреждение мембран нейронов не заканчивается на выписке. Структурная поддержка нейрона — отдельная задача от сосудистой профилактики, и её нужно продолжать после стационара.</p>
+        <div class="dose-row hl"><span class="k">Стационар</span><span class="v">1000 мг в/в 1 р/сут</span></div>
+        <div class="dose-row"><span class="k">Длительность (стационар)</span><span class="v">10–14 сут</span></div>
+        <div class="dose-row"><span class="k">Амбулаторно</span><span class="v">табл. 500 мг / р-р 100 мг/мл</span></div>
+        <div class="dose-row"><span class="k">Курс</span><span class="v">≥45 дней</span></div>
+        <div class="step-note">Длительная терапия цитиколином связана с улучшением когнитивного статуса и качества жизни через 2 года после первого ишемического инсульта.</div>
+        <div class="src-line">Alvarez-Sabín J et al., 2016 · <a href="https://pubmed.ncbi.nlm.nih.gov/26999113/" target="_blank" rel="noopener">PMID 26999113</a></div>
+      </div>
+    </div>`;
+  }
+
+  // Ступенчатая схема — только по фактически отмеченным трекам этого пациента
+  if(sel.fx||sel.li){
+    let rows='';
+    if(sel.fx) rows+=`<div class="sc-row fx"><span class="name">Фленокс</span><div class="track"><div class="fill"></div></div></div>`;
+    if(sel.li) rows+=`<div class="sc-row li"><span class="name">Лира</span><div class="track"><div class="fill"></div></div></div>`;
+    const punch = sel.li ? 'Нейрорепарация не прерывается на выписке' : 'Профилактика ВТЭ продолжается до 14 дней от начала';
+    h+=`<div class="scheme">
+      <h4>Путь пациента: стационар → амбулаторный этап</h4>
+      ${rows}
+      <div class="sc-foot"><span>Стационар</span><span>Выписка</span><span>${sel.li?'Амбулаторно (до 45+ сут)':'До 14 сут'}</span></div>
+      <div class="punch">${punch}</div>
+    </div>`;
+  }
+
+  const note=buildNote();
+  h+=`<div class="share-row">
+    <button class="prim" onclick="doShare()">${shareIco()} Поделиться</button>
+    <button onclick="doCopy()">${copyIco()} Копировать</button>
+  </div>
+  <div style="text-align:center;margin:14px 0 4px"><button class="btn-ghost" onclick="sel={fx:false,li:false};step=0;renderApp()">↺ новый пациент</button></div>
+  <p class="disc">Источники: Sherman DG et al., PREVAIL, Lancet 2007 (PMID 17448820) · Alvarez-Sabín J et al., 2016 (PMID 26999113) · Инструкции Фленокс 4000, Лира — Farmak. Инструмент поддержки клинического решения — не заменяет клиническое суждение, инструкцию препарата и действующие клинические рекомендации. При поддержке Farmak.</p>
+  </div>`;
+  window._note=note;
+  return h;
+}
+
+function buildNote(){
+  let n=`КЛИНИЧЕСКАЯ ЗАМЕТКА · Ранний восстановительный период после ОИИ\n`;
+  n+=`Пациент: 6-е сутки после ишемического инсульта, подвижность снижена.\n\n`;
+  if(sel.fx){
+    n+=`ЗАЩИТА ОТ ВТЭ — Фленокс 4000: 40 мг п/к 1 р/сут, до 14 дней. Эноксапарин снизил риск ВТЭ на 43% vs НФГ (PREVAIL, PMID 17448820).\n\n`;
+  }
+  if(sel.li){
+    n+=`СТРУКТУРНАЯ ПОДДЕРЖКА НЕЙРОНА — Лира: стационар 1000 мг в/в 1 р/сут 10–14 сут → амбулаторно табл. 500 мг / р-р 100 мг/мл, курс ≥45 дней. Улучшение когнитивного статуса и качества жизни через 2 года после инсульта (Alvarez-Sabín 2016, PMID 26999113).\n\n`;
+  }
+  n+=`Инструмент поддержки клинического решения; не заменяет клиническое суждение и инструкцию препарата. При поддержке Farmak.`;
+  return n;
+}
+
+async function doShare(){
+  const t=window._note;
+  if(navigator.share){try{await navigator.share({title:'Клиническая заметка · Farmak',text:t});}catch(e){}}
+  else{doCopy();}
+}
+function doCopy(){
+  const t=window._note;
+  if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>toast('Заметка скопирована')).catch(()=>fallbackCopy(t));}
+  else fallbackCopy(t);
+}
+function fallbackCopy(t){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Заметка скопирована');}catch(e){}document.body.removeChild(ta);}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+function shareIco(){return '<svg viewBox="0 0 24 24" fill="none"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 15V4M8 8l4-4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+function copyIco(){return '<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15V5a2 2 0 012-2h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';}
+
+function openModal(){
+  $('sheet').innerHTML=`<h4>Ранний восстановительный период</h4>
+    <p>Инструмент поддержки решения для 6-х суток после ишемического инсульта — периода, когда острая фаза позади, но функциональный исход ещё не определён.</p>
+    <ul>
+      <li><b>Фленокс 4000</b> — профилактика ВТЭ при сниженной подвижности.</li>
+      <li><b>Лира</b> — структурная поддержка нейрона, переход стационар → амбулаторный этап.</li>
+    </ul>
+    <p style="color:var(--mute)">Это два независимых клинических вопроса одного пациента — не альтернатива друг другу. Инструмент поддержки клинического решения, не заменяет суждение врача, инструкцию препарата и клинические рекомендации.</p>
+    <div class="src">PREVAIL, Lancet 2007 (PMID 17448820) · Alvarez-Sabín 2016 (PMID 26999113)<br>При поддержке Farmak</div>
+    <button class="close" onclick="closeModal()">Понятно</button>`;
+  $('modal').classList.add('open');
+}
+function closeModal(){$('modal').classList.remove('open');}
+
+function renderApp(){
+  $('root').innerHTML=render();
+  const screenNames=['portrait','check','results'];
+  if(window.FarmakTrack)FarmakTrack.log('vosstanovlenie',screenNames[step]);
+}
+renderApp();
+</script>
+</body>
+</html>
