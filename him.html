@@ -42,6 +42,8 @@ button{font-family:var(--ui)}
 .mono-badge{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.4px;color:var(--gl-deep);background:var(--gl-tint);padding:4px 7px;border-radius:7px;white-space:nowrap}
 .mono-badge.li{color:var(--li-deep);background:var(--li-tint)}
 .mono-badge.di{color:var(--di-deep);background:var(--di-tint)}
+.wordmark{font-family:var(--display);font-weight:700;font-size:15px;color:var(--navy);letter-spacing:.1px}
+.wordmark small{display:block;font-family:var(--ui);font-size:9px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--mute)}
 .iinfo{border:1px solid var(--line);background:var(--card);color:var(--navy);width:32px;height:32px;border-radius:10px;font-weight:700;font-size:15px;display:grid;place-items:center;cursor:pointer;flex:0 0 auto}
 .steps{display:flex;gap:5px;margin-top:11px}
 .steps i{height:3px;flex:1;border-radius:3px;background:var(--line);transition:background .3s}
@@ -172,11 +174,7 @@ h1.title{font-family:var(--display);font-weight:600;font-size:24px;line-height:1
   <!-- HEADER -->
   <div class="top">
     <div class="brandrow">
-      <div class="mark">
-        <span class="mono-badge">ГЛИЯТОН</span>
-        <span class="mono-badge li">ЛИРА</span>
-        <span class="mono-badge di">ДИНАР</span>
-      </div>
+      <div class="mark" id="brandmark"></div>
       <div class="iinfo" onclick="openModal()">i</div>
     </div>
     <div class="steps"><i class="s0"></i><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s5"></i></div>
@@ -195,9 +193,20 @@ h1.title{font-family:var(--display);font-weight:600;font-size:24px;line-height:1
 function $(id){return document.getElementById(id);}
 
 let step=0;
+let patient={gender:null, age:null, risk:{ag:false,ath:false,dm:false,ihd:false}};
 let sym={forget:false,evening:false,apathy:false,labile:false,anxious:false,tired:false};
 let compensated=null; // true/false
 let ctx={setting:'stationary', dysphagia:false}; // 'stationary' | 'ambulatory'
+
+function updateHeaderMark(){
+  const el=$('brandmark');
+  if(!el) return;
+  if(step>=4){
+    el.innerHTML=`<span class="mono-badge">ГЛИЯТОН</span><span class="mono-badge li">ЛИРА</span><span class="mono-badge di">ДИНАР</span>`;
+  } else {
+    el.innerHTML=`<div class="wordmark">ХИМ<small>церебральная поддержка</small></div>`;
+  }
+}
 
 function setSteps(n){
   document.querySelectorAll('.steps i').forEach((el,i)=>{
@@ -214,27 +223,52 @@ function render(){
   return renderFollowUp();
 }
 
-/* ---------------- SCREEN 0 — крючок / портрет ---------------- */
+/* ---------------- SCREEN 0 — врач сам строит портрет пациента ---------------- */
 function renderHook(){
   setSteps(0);
+  const g=patient.gender, a=patient.age;
+  const ready = g && a;
   const h=`<div class="screen">
-    <div class="eyebrow">Портрет пациента · терапевтический приём</div>
-    <h1 class="title">Пациент с симптомами ХИМ*</h1>
-    <p class="lead">Такого пациента вы видите почти каждую неделю — приходит не с новым диагнозом, а с тем, что «стал не таким, как раньше».</p>
+    <div class="eyebrow">Ваш пациент, не готовый пример</div>
+    <h1 class="title">С кем вы сейчас работаете?*</h1>
+    <p class="lead">Отметьте то, что подходит вашему пациенту — дальше пойдём по его реальной картине.</p>
 
-    <div class="portrait">
-      <div class="prow"><span class="k">Пациент</span><span class="v">Женщина, 68 лет</span></div>
-      <div class="prow"><span class="k">Фон</span><span class="v">АГ, атеросклероз — много лет, лечение подобрано</span></div>
-      <div class="prow"><span class="k">Жалобы семьи</span><span class="v">Забывчивость, апатия, к вечеру — спутанность</span></div>
-      <div class="prow"><span class="k">Осмотр</span><span class="v">Очаговой неврологии нет, гемодинамика стабильна</span></div>
-      <div class="prow"><span class="k">Диагноз</span><span class="v">Основной диагноз компенсирован</span></div>
-      <div class="anchor-line">Основной диагноз компенсирован.<br>Когнитивный дефицит — сохраняется.</div>
+    <div class="opt-group">
+      <div class="opt-title">Пол</div>
+      <div class="opt-row">
+        <div class="opt-btn ${g==='f'?'on':''}" onclick="setPatient('gender','f')">Женщина</div>
+        <div class="opt-btn ${g==='m'?'on':''}" onclick="setPatient('gender','m')">Мужчина</div>
+      </div>
     </div>
-    <p class="lead" style="margin-top:4px;font-size:11px">*ХИМ — хроническая ишемия мозга.</p>
+
+    <div class="opt-group">
+      <div class="opt-title">Возраст</div>
+      <div class="opt-row">
+        <div class="opt-btn ${a==='50-65'?'on':''}" onclick="setPatient('age','50-65')">50–65</div>
+        <div class="opt-btn ${a==='65-75'?'on':''}" onclick="setPatient('age','65-75')">65–75</div>
+        <div class="opt-btn ${a==='75+'?'on':''}" onclick="setPatient('age','75+')">75+</div>
+      </div>
+    </div>
+
+    <div class="opt-group">
+      <div class="opt-title">Фон (можно несколько, необязательно)</div>
+      <div class="sym-grid" style="grid-template-columns:1fr 1fr">
+        <div class="sym-card ${patient.risk.ag?'on':''}" onclick="toggleRisk('ag')"><div class="lbl">АГ</div><div class="check">${checkIco()}</div></div>
+        <div class="sym-card ${patient.risk.ath?'on':''}" onclick="toggleRisk('ath')"><div class="lbl">Атеросклероз</div><div class="check">${checkIco()}</div></div>
+        <div class="sym-card ${patient.risk.dm?'on':''}" onclick="toggleRisk('dm')"><div class="lbl">СД2</div><div class="check">${checkIco()}</div></div>
+        <div class="sym-card ${patient.risk.ihd?'on':''}" onclick="toggleRisk('ihd')"><div class="lbl">ИБС</div><div class="check">${checkIco()}</div></div>
+      </div>
+    </div>
+    <p class="lead" style="margin-top:-4px;font-size:11px">*Портрет собирается из ваших ответов — это не готовый кейс.</p>
   </div>
-  <div class="cta-fixed"><button onclick="step=1;renderApp()">У вашего пациента есть похожее? →</button></div>`;
+  <div class="cta-fixed">
+    <button ${ready?'':'disabled'} onclick="step=1;renderApp()">Дальше — жалобы →</button>
+    ${ready?'':'<div class="hint">Выберите пол и возраст</div>'}
+  </div>`;
   return h;
 }
+function setPatient(k,v){ patient[k]=v; renderApp(); }
+function toggleRisk(k){ patient.risk[k]=!patient.risk[k]; renderApp(); }
 
 /* ---------------- SCREEN 1 — узнавание (без бренда, без баллов) ---------------- */
 const SYM=[
@@ -449,6 +483,7 @@ function renderFollowUp(){
 }
 
 function resetAll(){
+  patient={gender:null,age:null,risk:{ag:false,ath:false,dm:false,ihd:false}};
   sym={forget:false,evening:false,apathy:false,labile:false,anxious:false,tired:false};
   compensated=null;
   ctx={setting:'stationary',dysphagia:false};
@@ -460,8 +495,10 @@ function buildNote(){
   const chosenSym=SYM.filter(s=>sym[s.k]).map(s=>s.lbl.toLowerCase()).join(', ')||'—';
   const setting = ctx.setting==='stationary'?'стационар/декомпенсация':'амбулаторно';
   const dy = ctx.dysphagia? 'есть дисфагия':'без дисфагии';
+  const genderText = patient.gender==='f'?'Женщина':'Мужчина';
+  const riskList=[patient.risk.ag&&'АГ',patient.risk.ath&&'атеросклероз',patient.risk.dm&&'СД2',patient.risk.ihd&&'ИБС'].filter(Boolean).join(', ')||'не отмечен';
   return `Клиническая заметка · ХИМ, терапевтический приём
-Пациент: основной диагноз компенсирован, жалобы — ${chosenSym}. Контекст: ${setting}, ${dy}.
+Пациент: ${genderText}, ${patient.age||'—'} лет. Фон: ${riskList}. Основной диагноз компенсирован, жалобы — ${chosenSym}. Контекст: ${setting}, ${dy}.
 
 Церебральная поддержка на трёх уровнях (рассмотреть у этого пациента):
 · Глиятон (функция) — ${ctx.setting==='stationary'?'старт 1000 мг/сут стационар → ':''}${ctx.dysphagia?'оральный р-р 600 мг×2/сут':'капсулы 400 мг, 800–1200 мг/сут'}
@@ -498,7 +535,7 @@ function openModal(){
 }
 function closeModal(){ $('modal').classList.remove('open'); }
 
-function renderApp(){ $('root').innerHTML = render(); }
+function renderApp(){ $('root').innerHTML = render(); updateHeaderMark(); }
 renderApp();
 </script>
 </body>
