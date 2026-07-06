@@ -198,7 +198,7 @@ h1.title{font-family:var(--display);font-weight:600;font-size:24px;line-height:1
 function $(id){return document.getElementById(id);}
 
 let step=0;
-let patient={gender:null, age:null, stazh:null, risk:{ag:false,ath:false,dm:false,ihd:false}};
+let patient={gender:null, age:null, stazh:null, duration:null, risk:{ag:false,ath:false,dm:false,ihd:false}};
 let sym={forget:false,evening:false,apathy:false,labile:false,anxious:false,tired:false};
 let compensated=null; // true/false
 let ctx={setting:'stationary', dysphagia:false}; // 'stationary' | 'ambulatory'
@@ -300,8 +300,12 @@ function renderCheck(){
     <div class="backrow"><button onclick="step=0;renderApp()">‹ Назад к пациенту</button></div>
     <div class="eyebrow">Узнавание, не диагностика</div>
     <h1 class="title">Что из этого видите у своего пациента?</h1>
-    <p class="lead">Отметьте всё, что было за последний месяц. Это не тест и не шкала — просто узнавание типичной картины.</p>
+    <p class="lead">Отметьте, что реально наблюдаете. Это не тест и не шкала — просто узнавание типичной картины.</p>
     <div class="sym-grid">${cards}</div>
+    <div class="field" style="margin-top:2px">
+      <label>Как давно эти жалобы (примерно)</label>
+      <div class="inwrap"><input id="p-dur" inputmode="numeric" placeholder="—" value="${patient.duration||''}" oninput="patient.duration=this.value"><span class="unit">мес.</span></div>
+    </div>
     <p class="sym-note">Не нужно набрать «достаточно» пунктов — важно само узнавание.</p>
   </div>
   <div class="cta-fixed">
@@ -491,7 +495,7 @@ function renderFollowUp(){
 }
 
 function resetAll(){
-  patient={gender:null,age:null,stazh:null,risk:{ag:false,ath:false,dm:false,ihd:false}};
+  patient={gender:null,age:null,stazh:null,duration:null,risk:{ag:false,ath:false,dm:false,ihd:false}};
   sym={forget:false,evening:false,apathy:false,labile:false,anxious:false,tired:false};
   compensated=null;
   ctx={setting:'stationary',dysphagia:false};
@@ -506,8 +510,9 @@ function buildNote(){
   const genderText = patient.gender==='f'?'Женщина':'Мужчина';
   const riskList=[patient.risk.ag&&'АГ',patient.risk.ath&&'атеросклероз',patient.risk.dm&&'СД2',patient.risk.ihd&&'ИБС'].filter(Boolean).join(', ')||'не отмечен';
   const stazhText = patient.stazh? ` (стаж ${patient.stazh} лет)`:'';
+  const durText = patient.duration? `, жалобы ~${patient.duration} мес.`:'';
   return `Клиническая заметка · ХИМ, терапевтический приём
-Пациент: ${genderText}, ${patient.age||'—'} лет. Фон: ${riskList}${stazhText}. Основной диагноз компенсирован, жалобы — ${chosenSym}. Контекст: ${setting}, ${dy}.
+Пациент: ${genderText}, ${patient.age||'—'} лет. Фон: ${riskList}${stazhText}. Основной диагноз компенсирован, жалобы — ${chosenSym}${durText}. Контекст: ${setting}, ${dy}.
 
 Церебральная поддержка на трёх уровнях (рассмотреть у этого пациента):
 · Глиятон (функция) — ${ctx.setting==='stationary'?'старт 1000 мг/сут стационар → ':''}${ctx.dysphagia?'оральный р-р 600 мг×2/сут':'капсулы 400 мг, 800–1200 мг/сут'}
