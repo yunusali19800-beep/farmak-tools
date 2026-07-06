@@ -59,6 +59,11 @@ h1.title{font-family:var(--display);font-weight:600;font-size:24px;line-height:1
 .portrait .prow .k{color:var(--ink-soft)}
 .portrait .prow .v{font-weight:700;color:var(--ink);text-align:right;max-width:62%}
 .timeline{display:flex;align-items:center;gap:6px;margin-top:14px}
+.opt-group{margin-bottom:16px}
+.opt-title{font-size:12.5px;font-weight:800;color:var(--navy);margin-bottom:8px}
+.opt-row{display:flex;gap:9px}
+.opt-btn{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:13px 8px;text-align:center;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;box-shadow:var(--sh)}
+.opt-btn.on{border-color:var(--navy);background:var(--navy);color:#fff}
 .timeline .seg{flex:1;height:6px;border-radius:4px;background:var(--line)}
 .timeline .seg.now{background:var(--navy)}
 .tl-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--mute);margin-top:5px;font-weight:600}
@@ -193,6 +198,7 @@ function $(id){return document.getElementById(id);}
 
 let sel={fx:false,li:false};
 let step=0;
+let patient={gender:null, period:null}; // period: 'acute'|'current'|'later'
 
 function setSteps(n){
   document.querySelectorAll('.steps i').forEach((el,i)=>{
@@ -210,29 +216,47 @@ function render(){
 
 function renderPortrait(){
   setSteps(0);
+  const g=patient.gender, p=patient.period;
+  const ready = g && p;
+  const periodLbl = p==='acute'? 'первые дни после ОИИ' : p==='later'? 'поздний восстановительный период' : '10–14-е сутки после ОИИ';
   const h=`<div class="screen">
-    <div class="eyebrow">Портрет пациента · ранний восстановительный период</div>
-    <h1 class="title">6-е сутки после ишемического инсульта</h1>
-    <p class="lead">Острая фаза позади. Что из происходящего с пациентом сейчас не закрывает стандартная вторичная профилактика?</p>
+    <div class="eyebrow">Ваш пациент, не готовый пример</div>
+    <h1 class="title">С кем вы сейчас работаете?</h1>
+    <p class="lead">Отметьте, что подходит вашему пациенту — дальше пойдём по его реальной картине.</p>
 
-    <div class="portrait">
-      <div class="prow"><span class="k">Пациент</span><span class="v">Мужчина, 62 года</span></div>
-      <div class="prow"><span class="k">Фон, стаж</span><span class="v">Гипертоническая болезнь 15 лет, лечился нерегулярно; атеросклероз</span></div>
-      <div class="prow"><span class="k">Жалобы</span><span class="v">Слабость в правых конечностях, ходьба только с поддержкой, повышенная утомляемость</span></div>
-      <div class="prow"><span class="k">Анамнез</span><span class="v">6 сут назад — острое начало: слабость справа, речь нарушена. Тромболизис/тромбэктомия не проводились</span></div>
-      <div class="prow"><span class="k">Обследование</span><span class="v">КТ: ишемический очаг, бассейн левой СМА. Сейчас: правосторонний гемипарез, подвижность ограничена</span></div>
-      <div class="prow"><span class="k">Диагноз</span><span class="v">Ранний восстановительный период ОИИ*, 6-е сутки</span></div>
-      <div class="timeline">
-        <div class="seg"></div><div class="seg now"></div><div class="seg"></div>
+    <div class="opt-group">
+      <div class="opt-title">Пол</div>
+      <div class="opt-row">
+        <div class="opt-btn ${g==='m'?'on':''}" onclick="setPatient('gender','m')">Мужчина</div>
+        <div class="opt-btn ${g==='f'?'on':''}" onclick="setPatient('gender','f')">Женщина</div>
       </div>
-      <div class="tl-labels"><span>Острый период</span><span>Сейчас · 10–14 сут</span><span>Реабилитация</span></div>
-      <div class="anchor-line">Вторичная профилактика уже назначена. Функциональный исход решается именно сейчас — в эти 10–14 суток</div>
     </div>
-    <p class="lead" style="margin-top:4px;font-size:11px">*ОИИ — острый ишемический инсульт; СМА — средняя мозговая артерия.</p>
+
+    <div class="opt-group">
+      <div class="opt-title">Срок после ишемического инсульта*</div>
+      <div class="opt-row">
+        <div class="opt-btn ${p==='acute'?'on':''}" onclick="setPatient('period','acute')">Первые дни</div>
+        <div class="opt-btn ${p==='current'?'on':''}" onclick="setPatient('period','current')">10–14 сут</div>
+        <div class="opt-btn ${p==='later'?'on':''}" onclick="setPatient('period','later')">Позже</div>
+      </div>
+    </div>
+
+    ${ready?`<div class="portrait">
+      <div class="timeline">
+        <div class="seg ${p==='acute'?'now':''}"></div><div class="seg ${p==='current'?'now':''}"></div><div class="seg ${p==='later'?'now':''}"></div>
+      </div>
+      <div class="tl-labels"><span>Острый период</span><span>Ранний восстановительный</span><span>Реабилитация</span></div>
+      <div class="anchor-line">Вторичная профилактика уже назначена. Функциональный исход решается именно сейчас — в эти 10–14 суток</div>
+    </div>`:''}
+    <p class="lead" style="margin-top:4px;font-size:11px">*ОИИ — острый ишемический инсульт.</p>
   </div>
-  <div class="cta-fixed"><button onclick="step=1;renderApp()">Смотреть, что не закрыто →</button></div>`;
+  <div class="cta-fixed">
+    <button ${ready?'':'disabled'} onclick="step=1;renderApp()">Смотреть, что не закрыто →</button>
+    ${ready?'':'<div class="hint">Выберите пол и срок</div>'}
+  </div>`;
   return h;
 }
+function setPatient(k,v){ patient[k]=v; renderApp(); }
 
 function renderCheck(){
   setSteps(1);
@@ -410,7 +434,7 @@ function renderSummary(){
     <button class="prim" onclick="doShare()">${shareIco()} Поделиться</button>
     <button onclick="doCopy()">${copyIco()} Копировать</button>
   </div>
-  <div style="text-align:center;margin:14px 0 4px"><button class="btn-ghost" onclick="sel={fx:false,li:false};step=0;renderApp()">↺ новый пациент</button></div>
+  <div style="text-align:center;margin:14px 0 4px"><button class="btn-ghost" onclick="sel={fx:false,li:false};patient={gender:null,period:null};step=0;renderApp()">↺ новый пациент</button></div>
   <p class="disc">Источники: Sherman DG et al., PREVAIL, Lancet 2007 (PMID 17448820) · Alvarez-Sabín J et al., 2016 (PMID 26999113) · AVERT Trial, Lancet 2015 · AHA/ASA, Cochrane Collaboration · EXCITE Trial, Wolf et al., 2006 · Инструкции Фленокс 4000, Лира — Farmak. Инструмент поддержки клинического решения — не заменяет клиническое суждение, инструкцию препарата и действующие клинические рекомендации. При поддержке Farmak.</p>
   </div>`;
   return h;
