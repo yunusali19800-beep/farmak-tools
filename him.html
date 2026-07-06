@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1A2E5A">
+<title>Пациент с симптомами ХИМ · Farmak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1A2333; --ink-soft:#55607A; --mute:#8A93A8;
+  --paper:#EEF1F7; --card:#FFFFFF; --line:#DDE3EE; --line-soft:#EAEEF5;
+  --navy:#1A2E5A;
+  /* Глиятон — бирюзово-голубой (ФУНКЦИЯ) */
+  --gl:#4A9DA8; --gl-deep:#357C86; --gl-tint:#E3F1F2;
+  /* Лира — маджента-розовый (СТРУКТУРА) */
+  --li:#C6386F; --li-deep:#9E2856; --li-tint:#FBE4ED;
+  /* Динар — зелёный (ЭНЕРГИЯ) */
+  --di:#1FA463; --di-deep:#16824E; --di-tint:#E1F3EA;
+  --ok:#1FA463; --ok-tint:#E1F3EA;
+  --warn:#C0801A; --warn-tint:#F7ECD6;
+  --display:'Spectral',Georgia,serif;
+  --ui:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --r:18px; --r-sm:12px;
+  --sh:0 1px 2px rgba(26,35,51,.05),0 10px 30px rgba(26,35,51,.09);
+  --sh-lg:0 6px 16px rgba(26,35,51,.10),0 20px 50px rgba(26,35,51,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:var(--ui);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;line-height:1.45;overscroll-behavior-y:none}
+.app{max-width:480px;margin:0 auto;min-height:100vh;position:relative;display:flex;flex-direction:column;background:var(--paper)}
+.hidden{display:none!important}
+button{font-family:var(--ui)}
+
+/* ---------- HEADER ---------- */
+.top{position:sticky;top:0;z-index:20;background:rgba(238,241,247,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:12px 18px 11px}
+.brandrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.mark{display:flex;align-items:center;gap:6px;min-width:0;flex-wrap:wrap}
+.mono-badge{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.4px;color:var(--gl-deep);background:var(--gl-tint);padding:4px 7px;border-radius:7px;white-space:nowrap}
+.mono-badge.li{color:var(--li-deep);background:var(--li-tint)}
+.mono-badge.di{color:var(--di-deep);background:var(--di-tint)}
+.iinfo{border:1px solid var(--line);background:var(--card);color:var(--navy);width:32px;height:32px;border-radius:10px;font-weight:700;font-size:15px;display:grid;place-items:center;cursor:pointer;flex:0 0 auto}
+.steps{display:flex;gap:5px;margin-top:11px}
+.steps i{height:3px;flex:1;border-radius:3px;background:var(--line);transition:background .3s}
+.steps i.on{background:linear-gradient(90deg,var(--gl),var(--li),var(--di))} .steps i.done{background:var(--navy)}
+
+.screen{flex:1;padding:18px 18px 130px;animation:fade .32s ease}
+@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:1.3px;text-transform:uppercase;margin:2px 0 8px;color:var(--navy)}
+h1.title{font-family:var(--display);font-weight:600;font-size:24px;line-height:1.18;margin:0 0 7px;letter-spacing:-.2px;color:var(--ink)}
+.lead{font-size:13.5px;color:var(--ink-soft);margin:0 0 18px}
+
+/* ---------- PORTRAIT CARD ---------- */
+.portrait{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:17px 16px;margin-bottom:16px;box-shadow:var(--sh)}
+.portrait .prow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:13px;gap:10px}
+.portrait .prow:last-child{border-bottom:none}
+.portrait .prow .k{color:var(--ink-soft);flex:0 0 auto}
+.portrait .prow .v{font-weight:700;color:var(--ink);text-align:right}
+.anchor-line{background:var(--navy);color:#fff;border-radius:var(--r-sm);padding:12px 14px;font-size:13px;font-weight:700;text-align:center;margin-top:14px;line-height:1.4}
+
+/* ---------- CHECKLIST (symptom recognition, no scoring) ---------- */
+.sym-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+.sym-card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:13px 11px;cursor:pointer;transition:border-color .15s,box-shadow .15s;box-shadow:var(--sh);text-align:center}
+.sym-card.on{border-color:var(--navy);background:linear-gradient(180deg,#fff,var(--paper))}
+.sym-card .ico{font-size:20px;margin-bottom:6px}
+.sym-card .lbl{font-size:12px;font-weight:700;color:var(--ink);line-height:1.3}
+.sym-card .check{display:inline-block;margin-top:6px;width:18px;height:18px;border-radius:6px;border:2px solid var(--line);position:relative}
+.sym-card.on .check{background:var(--navy);border-color:var(--navy)}
+.sym-card.on .check svg{opacity:1}
+.sym-card .check svg{opacity:0;width:12px;height:12px;position:absolute;top:1px;left:1px;transition:opacity .12s}
+.sym-note{font-size:11.5px;color:var(--mute);text-align:center;margin:2px 0 14px;line-height:1.5}
+
+/* ---------- YES/NO ---------- */
+.yn-row{display:flex;gap:10px;margin-bottom:16px}
+.yn-btn{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px 10px;text-align:center;font-size:14px;font-weight:800;color:var(--ink);cursor:pointer;box-shadow:var(--sh)}
+.yn-btn.on{border-color:var(--navy);background:var(--navy);color:#fff}
+
+/* ---------- gap card (restored vs left) ---------- */
+.gap-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;margin-bottom:14px;box-shadow:var(--sh)}
+.gap-card h4{margin:0 0 10px;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+.gap-card.ok h4{color:var(--ok)}
+.gap-card.warn h4{color:var(--warn)}
+.gap-chip-row{display:flex;flex-wrap:wrap;gap:7px}
+.gap-chip{font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:9px}
+.gap-card.ok .gap-chip{background:var(--ok-tint);color:var(--di-deep)}
+.gap-card.warn .gap-chip{background:var(--warn-tint);color:var(--warn)}
+
+.exit-card{background:var(--card);border:1.5px solid var(--warn);border-radius:var(--r);padding:18px 16px;margin-bottom:16px;box-shadow:var(--sh)}
+.exit-card p{font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0}
+
+.backrow{display:flex;align-items:center;margin:-2px 0 10px}
+.backrow button{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--ink-soft);font-size:13px;font-weight:600;cursor:pointer;padding:5px 0}
+
+.cta-fixed{position:fixed;left:0;right:0;bottom:0;z-index:15;max-width:480px;margin:0 auto;padding:14px 18px 20px;background:linear-gradient(0deg,var(--paper) 60%,transparent)}
+.cta-fixed button{width:100%;border:none;border-radius:15px;padding:16px;font-size:15.5px;font-weight:800;color:#fff;cursor:pointer;box-shadow:var(--sh-lg);background:linear-gradient(90deg,var(--gl),var(--li),var(--di))}
+.cta-fixed button:disabled{opacity:.4;cursor:not-allowed}
+.cta-fixed .hint{text-align:center;font-size:11px;color:var(--mute);margin-top:8px}
+
+/* ---------- CONTEXT TOGGLES ---------- */
+.opt-group{margin-bottom:18px}
+.opt-title{font-size:12.5px;font-weight:800;color:var(--navy);margin-bottom:8px}
+.opt-row{display:flex;gap:10px}
+.opt-btn{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:13px 8px;text-align:center;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer;box-shadow:var(--sh)}
+.opt-btn.on{border-color:var(--navy);background:var(--navy);color:#fff}
+
+/* ---------- NEUROCARD SYSTEM (result) ---------- */
+.nk-row{display:flex;gap:8px;margin-bottom:16px}
+.nk-chip{flex:1;border-radius:14px;padding:12px 8px;text-align:center;color:#fff}
+.nk-chip.gl{background:linear-gradient(150deg,var(--gl),var(--gl-deep))}
+.nk-chip.li{background:linear-gradient(150deg,var(--li),var(--li-deep))}
+.nk-chip.di{background:linear-gradient(150deg,var(--di),var(--di-deep))}
+.nk-chip .t{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;opacity:.85}
+.nk-chip .n{font-family:var(--display);font-size:15px;font-weight:700;margin-top:3px}
+.nk-chip .s{font-size:9.5px;opacity:.9;margin-top:2px;line-height:1.3}
+.nk-punch{background:var(--navy);color:#fff;border-radius:var(--r-sm);padding:12px 14px;font-size:12.5px;font-weight:700;text-align:center;margin-bottom:18px;line-height:1.45}
+
+.scheme{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;margin-bottom:14px;box-shadow:var(--sh)}
+.scheme-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+.scheme-head h4{margin:0;font-size:14px;font-weight:800;font-family:var(--display)}
+.scheme.gl h4{color:var(--gl-deep)} .scheme.li h4{color:var(--li-deep)} .scheme.di h4{color:var(--di-deep)}
+.scheme-tag{font-family:var(--mono);font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:7px}
+.scheme.gl .scheme-tag{color:var(--gl-deep);background:var(--gl-tint)}
+.scheme.li .scheme-tag{color:var(--li-deep);background:var(--li-tint)}
+.scheme.di .scheme-tag{color:var(--di-deep);background:var(--di-tint)}
+.dose-row{display:flex;justify-content:space-between;padding:7px 0;font-size:12.5px;border-bottom:1px solid var(--line-soft);gap:10px}
+.dose-row:last-child{border-bottom:none}
+.dose-row .k{color:var(--ink-soft);flex:0 0 auto}
+.dose-row .v{font-weight:800;color:var(--ink);text-align:right}
+.scheme.gl .dose-row.hl .v{color:var(--gl-deep)}
+.scheme.li .dose-row.hl .v{color:var(--li-deep)}
+.scheme.di .dose-row.hl .v{color:var(--di-deep)}
+.form-note{margin-top:10px;background:var(--paper);border-radius:10px;padding:9px 11px;font-size:11.5px;color:var(--ink-soft);line-height:1.5}
+
+.src-line{margin-top:6px;font-size:11px;color:var(--mute);line-height:1.55}
+.src-line a{color:var(--navy);font-weight:700;text-decoration:none;border-bottom:1px solid var(--line)}
+
+/* ---------- SHARE / NOTE ---------- */
+.share-row{display:flex;gap:9px;margin-top:6px}
+.share-row button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:12px;font-size:13px;font-weight:700;color:var(--navy);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
+.share-row button.prim{background:var(--navy);color:#fff;border-color:var(--navy)}
+.share-row svg{width:16px;height:16px}
+.btn-ghost{background:none;border:1px solid var(--line);color:var(--ink-soft);font-size:12.5px;font-weight:700;padding:9px 14px;border-radius:11px;cursor:pointer}
+.disc{font-size:10.5px;color:var(--mute);line-height:1.6;margin:16px 2px 0}
+
+/* ---------- FOLLOW-UP (screen 5) ---------- */
+.fu-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 16px;margin-bottom:13px;box-shadow:var(--sh)}
+.fu-card h4{margin:0 0 9px;font-size:14px;font-weight:800;color:var(--navy)}
+.fu-list{margin:0;padding-left:16px;font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+.fu-list li{margin-bottom:3px}
+.fu-badge{display:inline-block;font-family:var(--mono);font-size:9.5px;font-weight:700;background:var(--ok-tint);color:var(--di-deep);padding:3px 8px;border-radius:7px;margin-bottom:8px}
+
+/* ---------- MODAL ---------- */
+.modal{position:fixed;inset:0;z-index:90;background:rgba(20,26,40,.55);display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.sheet{max-width:480px;width:100%;background:#fff;border-radius:20px 20px 0 0;padding:22px 20px 26px;max-height:80vh;overflow-y:auto}
+.sheet h4{font-family:var(--display);font-size:18px;margin:0 0 10px;color:var(--navy)}
+.sheet p{font-size:13px;color:var(--ink-soft);line-height:1.6}
+.sheet ul{padding-left:18px;font-size:12.5px;color:var(--ink-soft);line-height:1.7}
+.sheet .src{font-size:10.5px;color:var(--mute);margin-top:12px;line-height:1.6}
+.sheet .close{width:100%;border:none;background:var(--navy);color:#fff;border-radius:13px;padding:14px;font-weight:700;font-size:14px;margin-top:14px;cursor:pointer}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 18px;border-radius:12px;font-size:12.5px;font-weight:700;z-index:200;box-shadow:var(--sh-lg);opacity:0;pointer-events:none;transition:opacity .25s}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="top">
+    <div class="brandrow">
+      <div class="mark">
+        <span class="mono-badge">ГЛИЯТОН</span>
+        <span class="mono-badge li">ЛИРА</span>
+        <span class="mono-badge di">ДИНАР</span>
+      </div>
+      <div class="iinfo" onclick="openModal()">i</div>
+    </div>
+    <div class="steps"><i class="s0"></i><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s5"></i></div>
+  </div>
+
+  <div id="root"></div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="sheet" id="sheet"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="assets/track.js"></script>
+<script>
+function $(id){return document.getElementById(id);}
+
+let step=0;
+let sym={forget:false,evening:false,apathy:false,labile:false,anxious:false,tired:false};
+let compensated=null; // true/false
+let ctx={setting:'stationary', dysphagia:false}; // 'stationary' | 'ambulatory'
+
+function setSteps(n){
+  document.querySelectorAll('.steps i').forEach((el,i)=>{
+    el.className = i<n?'done':(i===n?'on':'');
+  });
+}
+
+function render(){
+  if(step===0) return renderHook();
+  if(step===1) return renderCheck();
+  if(step===2) return renderGap();
+  if(step===3) return renderContext();
+  if(step===4) return renderResolution();
+  return renderFollowUp();
+}
+
+/* ---------------- SCREEN 0 — крючок / портрет ---------------- */
+function renderHook(){
+  setSteps(0);
+  const h=`<div class="screen">
+    <div class="eyebrow">Портрет пациента · терапевтический приём</div>
+    <h1 class="title">Пациент с симптомами ХИМ*</h1>
+    <p class="lead">Такого пациента вы видите почти каждую неделю — приходит не с новым диагнозом, а с тем, что «стал не таким, как раньше».</p>
+
+    <div class="portrait">
+      <div class="prow"><span class="k">Пациент</span><span class="v">Женщина, 68 лет</span></div>
+      <div class="prow"><span class="k">Фон</span><span class="v">АГ, атеросклероз — много лет, лечение подобрано</span></div>
+      <div class="prow"><span class="k">Жалобы семьи</span><span class="v">Забывчивость, апатия, к вечеру — спутанность</span></div>
+      <div class="prow"><span class="k">Осмотр</span><span class="v">Очаговой неврологии нет, гемодинамика стабильна</span></div>
+      <div class="prow"><span class="k">Диагноз</span><span class="v">Основной диагноз компенсирован</span></div>
+      <div class="anchor-line">Основной диагноз компенсирован.<br>Когнитивный дефицит — сохраняется.</div>
+    </div>
+    <p class="lead" style="margin-top:4px;font-size:11px">*ХИМ — хроническая ишемия мозга.</p>
+  </div>
+  <div class="cta-fixed"><button onclick="step=1;renderApp()">У вашего пациента есть похожее? →</button></div>`;
+  return h;
+}
+
+/* ---------------- SCREEN 1 — узнавание (без бренда, без баллов) ---------------- */
+const SYM=[
+  {k:'forget', ico:'🧠', lbl:'Забывчивость'},
+  {k:'evening', ico:'🌙', lbl:'Спутанность к вечеру'},
+  {k:'apathy', ico:'🤍', lbl:'Апатия'},
+  {k:'labile', ico:'💫', lbl:'Эмоц. лабильность'},
+  {k:'anxious', ico:'😟', lbl:'Тревожность'},
+  {k:'tired', ico:'🔋', lbl:'Утомляемость'}
+];
+function renderCheck(){
+  setSteps(1);
+  const cards=SYM.map(s=>`
+    <div class="sym-card ${sym[s.k]?'on':''}" onclick="toggleSym('${s.k}')">
+      <div class="ico">${s.ico}</div>
+      <div class="lbl">${s.lbl}</div>
+      <div class="check">${checkIco()}</div>
+    </div>`).join('');
+  const anySelected=Object.values(sym).some(v=>v);
+  const h=`<div class="screen">
+    <div class="backrow"><button onclick="step=0;renderApp()">‹ Назад к пациенту</button></div>
+    <div class="eyebrow">Узнавание, не диагностика</div>
+    <h1 class="title">Что из этого видите у своего пациента?</h1>
+    <p class="lead">Отметьте всё, что было за последний месяц. Это не тест и не шкала — просто узнавание типичной картины.</p>
+    <div class="sym-grid">${cards}</div>
+    <p class="sym-note">Не нужно набрать «достаточно» пунктов — важно само узнавание.</p>
+  </div>
+  <div class="cta-fixed">
+    <button ${anySelected?'':'disabled'} onclick="step=2;renderApp()">Далее →</button>
+    ${anySelected?'':'<div class="hint">Отметьте хотя бы один пункт</div>'}
+  </div>`;
+  return h;
+}
+function toggleSym(k){ sym[k]=!sym[k]; renderApp(); }
+
+/* ---------------- SCREEN 2 — разрыв стандарта ---------------- */
+function renderGap(){
+  setSteps(2);
+  let body='';
+  if(compensated===null){
+    body=`<p class="lead">Один уточняющий вопрос перед тем, как идти дальше.</p>
+    <h1 class="title" style="font-size:19px;margin-bottom:14px">Гемодинамика и основной диагноз — компенсированы?</h1>
+    <div class="yn-row">
+      <div class="yn-btn" onclick="setCompensated(true)">Да, компенсированы</div>
+      <div class="yn-btn" onclick="setCompensated(false)">Нет, ещё нет</div>
+    </div>`;
+  } else if(compensated===true){
+    body=`<h1 class="title" style="font-size:20px">Стандарт закрыл одно — но не всё</h1>
+    <p class="lead">У сосудистого пациента с компенсированной гемодинамикой стандартная терапия решает не всё.</p>
+    <div class="gap-card ok">
+      <h4>Восстановлено стандартом</h4>
+      <div class="gap-chip-row">
+        <span class="gap-chip">Гемодинамика</span>
+        <span class="gap-chip">Оксигенация</span>
+        <span class="gap-chip">Контроль основного диагноза</span>
+      </div>
+    </div>
+    <div class="gap-card warn">
+      <h4>Осталось без терапии</h4>
+      <div class="gap-chip-row">
+        <span class="gap-chip">Память и внимание</span>
+        <span class="gap-chip">Мотивация, инициатива</span>
+        <span class="gap-chip">Эмоциональный контроль</span>
+      </div>
+    </div>
+    <div class="anchor-line">Когнитивный дефицит удлиняет госпитализацию и снижает самостоятельность после выписки.</div>`;
+  } else {
+    body=`<h1 class="title" style="font-size:20px">Пока рано</h1>
+    <div class="exit-card">
+      <p><b>Сначала — стабилизация основного диагноза.</b><br><br>Пока гемодинамика и основной диагноз не компенсированы, разговор о когнитивном/энергетическом дефиците преждевременный — сначала стандарт, потом церебральная поддержка.</p>
+    </div>
+    <button class="btn-ghost" onclick="compensated=null;renderApp()">‹ Вернуться к вопросу</button>`;
+  }
+  const h=`<div class="screen">
+    <div class="backrow"><button onclick="step=1;renderApp()">‹ Назад к жалобам</button></div>
+    <div class="eyebrow">Стандарты терапии при ХИМ</div>
+    ${body}
+  </div>
+  ${compensated===true?'<div class="cta-fixed"><button onclick="step=3;renderApp()">Смотреть систему поддержки →</button></div>':''}`;
+  return h;
+}
+function setCompensated(v){ compensated=v; renderApp(); }
+
+/* ---------------- SCREEN 3 — контекст назначения (логистика, не диагностика) ---------------- */
+function renderContext(){
+  setSteps(3);
+  const h=`<div class="screen">
+    <div class="backrow"><button onclick="step=2;renderApp()">‹ Назад</button></div>
+    <div class="eyebrow">Точка входа в схему</div>
+    <h1 class="title">Где сейчас пациент?</h1>
+    <p class="lead">Это не про выбор препарата — это про то, с какой формы начинать и как удобнее вести терапию.</p>
+
+    <div class="opt-group">
+      <div class="opt-title">Пациент сейчас</div>
+      <div class="opt-row">
+        <div class="opt-btn ${ctx.setting==='stationary'?'on':''}" onclick="setCtx('setting','stationary')">Стационар / декомпенсация</div>
+        <div class="opt-btn ${ctx.setting==='ambulatory'?'on':''}" onclick="setCtx('setting','ambulatory')">Амбулаторно</div>
+      </div>
+    </div>
+
+    <div class="opt-group">
+      <div class="opt-title">Есть трудность глотания (дисфагия)?</div>
+      <div class="opt-row">
+        <div class="opt-btn ${ctx.dysphagia===true?'on':''}" onclick="setCtx('dysphagia',true)">Да</div>
+        <div class="opt-btn ${ctx.dysphagia===false?'on':''}" onclick="setCtx('dysphagia',false)">Нет</div>
+      </div>
+    </div>
+  </div>
+  <div class="cta-fixed"><button onclick="step=4;renderApp()">Показать схему →</button></div>`;
+  return h;
+}
+function setCtx(k,v){ ctx[k]=v; renderApp(); }
+
+/* ---------------- SCREEN 4 — развязка: система + схема + записка ---------------- */
+function renderResolution(){
+  setSteps(4);
+  const h=`<div class="screen">
+    <div class="backrow"><button onclick="step=3;renderApp()">‹ Назад</button></div>
+    <div class="eyebrow">Один пациент — три направления одновременно</div>
+    <h1 class="title">Церебральная поддержка на трёх уровнях</h1>
+    <p class="lead">Это не выбор «какой из трёх» — это один и тот же пациент, три уровня одного каскада, работающие параллельно.</p>
+
+    <div class="nk-row">
+      <div class="nk-chip gl"><div class="t">Функция</div><div class="n">Глиятон</div><div class="s">память, мотивация, контакт</div></div>
+      <div class="nk-chip li"><div class="t">Структура</div><div class="n">Лира</div><div class="s">мембрана нейрона</div></div>
+      <div class="nk-chip di"><div class="t">Энергия</div><div class="n">Динар</div><div class="s">клеточное дыхание</div></div>
+    </div>
+    <div class="nk-punch">Контроль факторов риска — основа. Поддержка мозга на трёх уровнях — следующий шаг у этого же пациента.</div>
+
+    ${schemeCard('gl','ГЛИЯТОН','Функция')}
+    ${schemeCard('li','ЛИРА','Структура')}
+    ${schemeCard('di','ДИНАР','Энергия')}
+
+    <div class="share-row">
+      <button class="prim" onclick="doShare()">${shareIco()} Поделиться</button>
+      <button onclick="doCopy()">${copyIco()} Копировать</button>
+    </div>
+    <p class="disc">Источники: Sagaro GG et al., meta-analysis, PMID 36683513 · Alvarez-Sabín J et al., 2016, PMID 26999113 · Fedin AI et al., MEMO, 2021, PMID 34932280 · доп. Kim et al. 2025, PMID 40155153 (внутренний источник, ожидает финального sign-off перед печатью в поле) · Инструкции Глиятон, Лира, Динар — Farmak. Инструмент поддержки клинического решения — не заменяет клиническое суждение, инструкцию препарата и действующие клинические рекомендации. При поддержке Farmak.</p>
+  </div>
+  <div class="cta-fixed"><button onclick="step=5;renderApp()">Что дальше на приёме →</button></div>`;
+  window._note=buildNote();
+  return h;
+}
+
+function schemeCard(track,name,role){
+  const st=ctx.setting; const dy=ctx.dysphagia;
+  let rows='', note='';
+  if(track==='gl'){
+    if(st==='stationary'){
+      rows=`<div class="dose-row hl"><span class="k">Старт (стационар)</span><span class="v">1000 мг/сут в/в или в/м, 15–20 дней</span></div>
+      <div class="dose-row"><span class="k">Далее (амбулаторно)</span><span class="v">${dy? 'Оральный р-р 600 мг × 2/сут':'Капсулы 400 мг, 800–1200 мг/сут'}</span></div>`;
+    } else {
+      rows=`<div class="dose-row hl"><span class="k">Старт (амбулаторно)</span><span class="v">${dy? 'Оральный р-р 600 мг × 2/сут':'Капсулы 400 мг, 800–1200 мг/сут'}</span></div>`;
+    }
+    note=dy?'Оральный раствор — форма продолжения терапии при трудности глотания капсул, не лечение дисфагии как таковой.':'Курс амбулаторно определяет врач индивидуально.';
+  }
+  if(track==='li'){
+    if(st==='stationary'){
+      rows=`<div class="dose-row hl"><span class="k">Старт (стационар)</span><span class="v">1000 мг/сут в/в или в/м</span></div>
+      <div class="dose-row"><span class="k">Далее (амбулаторно)</span><span class="v">${dy? 'Оральный р-р 500–2000 мг/сут':'Таблетки 500 мг, 500–2000 мг/сут'}</span></div>`;
+    } else {
+      rows=`<div class="dose-row hl"><span class="k">Старт (амбулаторно)</span><span class="v">${dy? 'Оральный р-р 500–2000 мг/сут':'Таблетки 500 мг, 500–2000 мг/сут'}</span></div>`;
+    }
+    note='При переходе на длительную терапию — пероральные формы, дозу определяет врач в диапазоне инструкции.';
+  }
+  if(track==='di'){
+    if(st==='stationary'){
+      rows=`<div class="dose-row hl"><span class="k">Старт (стационар)</span><span class="v">В/в 200–500 мг × 1–2 р/сут, 14 дней</span></div>
+      <div class="dose-row"><span class="k">Далее (амбулаторно)</span><span class="v">В/м 100–250 мг/сут, ещё 2 недели</span></div>`;
+    } else {
+      rows=`<div class="dose-row hl"><span class="k">Амбулаторно</span><span class="v">В/м 200–250 мг × 2 р/сут, 10–14 дней</span></div>`;
+    }
+    note='В/в — только в условиях стационара/капельно. В/м — исключительно амбулаторный контекст. Позиционирование строго энергия/антигипоксия, не когниция.';
+  }
+  return `<div class="scheme ${track}">
+    <div class="scheme-head"><h4>${name}</h4><span class="scheme-tag">${role.toUpperCase()}</span></div>
+    ${rows}
+    <div class="form-note">${note}</div>
+  </div>`;
+}
+
+/* ---------------- SCREEN 5 — что дальше (follow-up) ---------------- */
+function renderFollowUp(){
+  setSteps(5);
+  const chosenSym=SYM.filter(s=>sym[s.k]).map(s=>s.lbl.toLowerCase());
+  const symText = chosenSym.length? chosenSym.join(', ') : 'отмеченные жалобы';
+  const h=`<div class="screen">
+    <div class="backrow"><button onclick="step=4;renderApp()">‹ Назад к схеме</button></div>
+    <div class="eyebrow">Мостик к следующему визиту</div>
+    <h1 class="title">На что смотреть на следующем приёме</h1>
+
+    <div class="fu-card">
+      <span class="fu-badge">СЛЕДУЮЩИЙ ВИЗИТ</span>
+      <h4>Комплаенс и переход на амбулаторные формы</h4>
+      <ul class="fu-list">
+        <li>Уточнить, продолжает ли пациент пероральные формы регулярно</li>
+        <li>Спросить семью: изменилось ли ${symText}</li>
+        <li>При сохранении дисфагии — не менять план, просто продолжить оральный раствор</li>
+      </ul>
+    </div>
+
+    <div class="fu-card">
+      <span class="fu-badge">НЕ ОТДЕЛЬНЫЙ ВИЗИТ</span>
+      <h4>Это один и тот же путь пациента</h4>
+      <p style="font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin:0">Стационарная и амбулаторная фаза — не два разных решения, а одна ступенчатая схема: старт под наблюдением → длительная поддержка дома.</p>
+    </div>
+
+    <div style="text-align:center;margin:16px 0 4px"><button class="btn-ghost" onclick="resetAll()">↺ новый пациент</button></div>
+    <p class="disc">Инструмент поддержки клинического решения — не заменяет клиническое суждение, инструкцию препарата и действующие клинические рекомендации. При поддержке Farmak.</p>
+  </div>`;
+  return h;
+}
+
+function resetAll(){
+  sym={forget:false,evening:false,apathy:false,labile:false,anxious:false,tired:false};
+  compensated=null;
+  ctx={setting:'stationary',dysphagia:false};
+  step=0; renderApp();
+}
+
+/* ---------------- clinical note ---------------- */
+function buildNote(){
+  const chosenSym=SYM.filter(s=>sym[s.k]).map(s=>s.lbl.toLowerCase()).join(', ')||'—';
+  const setting = ctx.setting==='stationary'?'стационар/декомпенсация':'амбулаторно';
+  const dy = ctx.dysphagia? 'есть дисфагия':'без дисфагии';
+  return `Клиническая заметка · ХИМ, терапевтический приём
+Пациент: основной диагноз компенсирован, жалобы — ${chosenSym}. Контекст: ${setting}, ${dy}.
+
+Церебральная поддержка на трёх уровнях (рассмотреть у этого пациента):
+· Глиятон (функция) — ${ctx.setting==='stationary'?'старт 1000 мг/сут стационар → ':''}${ctx.dysphagia?'оральный р-р 600 мг×2/сут':'капсулы 400 мг, 800–1200 мг/сут'}
+· Лира (структура) — ${ctx.setting==='stationary'?'старт 1000 мг/сут стационар → ':''}${ctx.dysphagia?'оральный р-р 500–2000 мг/сут':'таблетки 500 мг, 500–2000 мг/сут'}
+· Динар (энергия) — ${ctx.setting==='stationary'?'в/в 200–500 мг×1–2 р/сут 14 дней → в/м 100–250 мг/сут':'в/м 200–250 мг×2 р/сут, 10–14 дней'}
+
+Источники: PMID 36683513, PMID 26999113, PMID 34932280. Инструмент поддержки клинического решения — не заменяет клиническое суждение, инструкцию препарата и действующие клинические рекомендации. При поддержке Farmak.`;
+}
+
+async function doShare(){
+  const t=window._note;
+  if(navigator.share){try{await navigator.share({title:'Клиническая заметка · Farmak',text:t});}catch(e){}}
+  else{doCopy();}
+}
+function doCopy(){
+  const t=window._note;
+  if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>toast('Заметка скопирована')).catch(()=>fallbackCopy(t));}
+  else fallbackCopy(t);
+}
+function fallbackCopy(t){const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Заметка скопирована');}catch(e){}document.body.removeChild(ta);}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+
+function shareIco(){return '<svg viewBox="0 0 24 24" fill="none"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 15V4M8 8l4-4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+function copyIco(){return '<svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15V5a2 2 0 012-2h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';}
+function checkIco(){return '<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';}
+
+function openModal(){
+  $('sheet').innerHTML=`<h4>О чём этот инструмент</h4>
+  <p>Инструмент поддержки клинического решения для терапевта — три препарата Farmak (Глиятон, Лира, Динар) как система церебральной поддержки у сосудистого пациента с симптомами хронической ишемии мозга (ХИМ).</p>
+  <p>Это не диагностический тест и не расчёт балла. Не заменяет клиническое суждение врача, инструкцию препарата и действующие клинические рекомендации.</p>
+  <div class="src">PMID 36683513 · PMID 26999113 · PMID 34932280 · инструкции Глиятон / Лира / Динар, Farmak.</div>
+  <button class="close" onclick="closeModal()">Понятно</button>`;
+  $('modal').classList.add('open');
+}
+function closeModal(){ $('modal').classList.remove('open'); }
+
+function renderApp(){ $('root').innerHTML = render(); }
+renderApp();
+</script>
+</body>
+</html>
