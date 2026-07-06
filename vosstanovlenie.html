@@ -167,11 +167,11 @@ h1.title{font-family:var(--display);font-weight:600;font-size:24px;line-height:1
   <!-- HEADER -->
   <div class="top">
     <div class="brandrow">
-      <div class="mark" id="brandmark">
+      <div class="mark" id="brandmark" style="display:none">
         <span class="mono-badge">ФЛЕНОКС 4000</span>
         <span class="mono-badge li">ЛИРА</span>
       </div>
-      <div class="mark" id="brandmark-placeholder" style="display:none">
+      <div class="mark" id="brandmark-placeholder">
         <span class="wordmark">Ранний восстановительный период</span>
       </div>
       <div class="iinfo" onclick="openModal()">i</div>
@@ -447,9 +447,8 @@ function closeModal(){$('modal').classList.remove('open');}
 
 function renderApp(){
   $('root').innerHTML=render();
-  const showBrand = step>=2;
-  $('brandmark').style.display = showBrand?'flex':'none';
-  $('brandmark-placeholder').style.display = showBrand?'none':'flex';
+  $('brandmark').style.display = 'none';
+  $('brandmark-placeholder').style.display = 'flex';
   const screenNames=['portrait','check','results','rehab','summary'];
   if(window.FarmakTrack)FarmakTrack.log('vosstanovlenie',screenNames[step]);
 }

@@ -201,11 +201,7 @@ let ctx={setting:'stationary', dysphagia:false}; // 'stationary' | 'ambulatory'
 function updateHeaderMark(){
   const el=$('brandmark');
   if(!el) return;
-  if(step>=4){
-    el.innerHTML=`<span class="mono-badge">ГЛИЯТОН</span><span class="mono-badge li">ЛИРА</span><span class="mono-badge di">ДИНАР</span>`;
-  } else {
-    el.innerHTML=`<div class="wordmark">ХИМ<small>церебральная поддержка</small></div>`;
-  }
+  el.innerHTML=`<div class="wordmark">ХИМ<small>церебральная поддержка</small></div>`;
 }
 
 function setSteps(n){

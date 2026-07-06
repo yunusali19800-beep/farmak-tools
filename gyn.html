@@ -349,7 +349,7 @@ let sel={}, renal={age:'',wt:'',cr:'',unit:'umol'};
 
 /* ================= NAV ================= */
 function goHub(){show('scr-hub');$('bar').classList.add('hidden');$('hbadge').textContent='ГЕМОСТАЗ';$('hbadge').className='mono-badge';$('hsub').textContent='два полюса гемостаза';setSteps(-1);}
-function goTrack(t){ if(t==='fx'){$('hbadge').textContent='ФЛЕНОКС';$('hbadge').className='mono-badge';$('hsub').textContent='профилактика тромбоза';goFxFactors();} else {$('hbadge').textContent='ГЕМОТРАН';$('hbadge').className='mono-badge gm';$('hsub').textContent='контроль кровотечения';goGm();} }
+function goTrack(t){ if(t==='fx'){$('hbadge').textContent='ТРОМБОЗ';$('hbadge').className='mono-badge';$('hsub').textContent='профилактика тромбоза';goFxFactors();} else {$('hbadge').textContent='КРОВОТЕЧЕНИЕ';$('hbadge').className='mono-badge';$('hsub').textContent='контроль кровотечения';goGm();} }
 
 /* ================= FLENOX FACTORS ================= */
 const FX_FACTORS=[
