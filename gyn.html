@@ -140,6 +140,11 @@ h1.title{font-family:var(--display);font-weight:600;font-size:25px;line-height:1
 .btn-fx{background:var(--fx);color:#fff} .btn-fx:active{background:var(--fx-deep)}
 .btn-gm{background:var(--gm);color:#fff} .btn-gm:active{background:var(--gm-deep)}
 .btn-ghost{background:transparent;color:var(--ink-soft);font-weight:700;padding:12px 4px;border:none;cursor:pointer;font-size:13.5px}
+.opt-group{margin-bottom:14px}
+.opt-title{font-size:12.5px;font-weight:800;color:var(--navy);margin-bottom:8px}
+.opt-row{display:flex;gap:9px}
+.opt-btn{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:12px 8px;text-align:center;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;box-shadow:var(--sh)}
+.opt-btn.on{border-color:var(--navy);background:var(--navy);color:#fff}
 .btn-block{width:100%;border:none;border-radius:13px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--ui)}
 
 /* ---------- RESULT ---------- */
@@ -542,9 +547,11 @@ function fxNote(s,t,verdict,duration,v){
 
 /* ============ GEMOTRAN PROTOCOL ============ */
 let gmMin=null;
+let gmDelivery=null; // 'vaginal' | 'cs'
 function animGm(){requestAnimationFrame(()=>{const b=$('res-gm-beam');if(b)b.style.transform=b.dataset.t;});}
 function goGm(){show('scr-gm');setSteps(1,true);$('bar').classList.add('hidden');$('gm-body').innerHTML=gmRender();animGm();}
 function setGmTime(m){gmMin=m;$('gm-body').innerHTML=gmRender();window.scrollTo(0,0);animGm();}
+function setGmDelivery(v){gmDelivery=v;$('gm-body').innerHTML=gmRender();animGm();}
 function gmRender(){
   let h='';
   h+=`<div class="eyebrow gm">Экстренный протокол</div>`;
@@ -571,6 +578,11 @@ function gmRender(){
     <div class="wsub">${inWin?'Окно максимальной пользы: снижение смертности при введении в первые 3 часа (WOMAN Trial). Вводить немедленно.':'После 3 часов польза снижается — каждая минута на счету. Вводить как можно раньше по клиническому решению.'}</div>
     <div style="margin-top:10px"><button class="btn-ghost" onclick="setGmTime(null)">↺ изменить время</button></div>
   </div>`;
+
+  h+=`<div class="opt-group" style="margin:14px 0"><div class="opt-title">Способ родоразрешения (необязательно)</div><div class="opt-row">
+    <div class="opt-btn ${gmDelivery==='vaginal'?'on':''}" onclick="setGmDelivery('vaginal')">Естественные</div>
+    <div class="opt-btn ${gmDelivery==='cs'?'on':''}" onclick="setGmDelivery('cs')">Кесарево</div>
+  </div></div>`;
 
   // ШАГ 3: доза — в ампулах, 1 ампула = 500 мг (5 мл, 100 мг/мл)
   h+=`<div class="dosebox"><div class="amp">1 ампула = 500 мг (5 мл)</div><div class="eq">2 ампулы (1 г) на введение</div><div class="fx">фиксированная доза — не зависит от массы тела</div></div>`;
@@ -603,8 +615,9 @@ function gmRender(){
   return h;
 }
 function gmNote(mins,inWin){
+  const delText = gmDelivery==='vaginal'?' Роды через естественные пути.':gmDelivery==='cs'?' Родоразрешение путём кесарева сечения.':'';
   let n=`КЛИНИЧЕСКАЯ ЗАМЕТКА · Протокол при послеродовом кровотечении\n`;
-  n+=`Время от начала кровотечения: ~${mins} мин (${inWin?'в пределах окна 3 ч':'окно 3 ч превышено'}).\n`;
+  n+=`Время от начала кровотечения: ~${mins} мин (${inWin?'в пределах окна 3 ч':'окно 3 ч превышено'}).${delText}\n`;
   n+=`Транексамовая кислота — часть первого ответа вместе с утеротониками; эффект максимален в первые 3 часа (WOMAN Trial).\n`;
   n+=`Гемотран: 2 ампулы (1 г, по 500 мг/5 мл) в/в медленно 10–20 мин; повтор 2 ампул (1 г) через 30 мин при продолжении/возобновлении кровотечения в течение 24 ч.\n`;
   n+=`Осторожность: тяжёлая почечная недостаточность — противопоказание; коррекция дозы при сниженной функции почек; тромбогенный риск учитывать.\n`;

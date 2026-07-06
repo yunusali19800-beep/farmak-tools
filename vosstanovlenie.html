@@ -203,7 +203,7 @@ function $(id){return document.getElementById(id);}
 
 let sel={fx:false,li:false};
 let step=0;
-let patient={gender:null, period:null, side:null, stazh:null}; // period: 'acute'|'current'|'later'
+let patient={gender:null, period:null, side:null, stazh:null, reperfusion:null, risk:{ath:false,dm:false,ihd:false}}; // period: 'acute'|'current'|'later'
 
 function setSteps(n){
   document.querySelectorAll('.steps i').forEach((el,i)=>{
@@ -258,6 +258,23 @@ function renderPortrait(){
       <div class="inwrap"><input id="p-stazh" inputmode="numeric" placeholder="—" value="${patient.stazh||''}" oninput="patient.stazh=this.value"><span class="unit">лет</span></div>
     </div>
 
+    <div class="opt-group">
+      <div class="opt-title">Фон (можно несколько, необязательно)</div>
+      <div class="opt-row">
+        <div class="opt-btn ${patient.risk.ath?'on':''}" onclick="toggleRisk('ath')">Атеросклероз</div>
+        <div class="opt-btn ${patient.risk.dm?'on':''}" onclick="toggleRisk('dm')">СД2</div>
+        <div class="opt-btn ${patient.risk.ihd?'on':''}" onclick="toggleRisk('ihd')">ИБС</div>
+      </div>
+    </div>
+
+    <div class="opt-group">
+      <div class="opt-title">Тромболизис / тромбэктомия проводились?</div>
+      <div class="opt-row">
+        <div class="opt-btn ${patient.reperfusion===true?'on':''}" onclick="setPatient('reperfusion',true)">Да</div>
+        <div class="opt-btn ${patient.reperfusion===false?'on':''}" onclick="setPatient('reperfusion',false)">Нет</div>
+      </div>
+    </div>
+
     ${ready?`<div class="portrait">
       <div class="timeline">
         <div class="seg ${p==='acute'?'now':''}"></div><div class="seg ${p==='current'?'now':''}"></div><div class="seg ${p==='later'?'now':''}"></div>
@@ -274,6 +291,7 @@ function renderPortrait(){
   return h;
 }
 function setPatient(k,v){ patient[k]=v; renderApp(); }
+function toggleRisk(k){ patient.risk[k]=!patient.risk[k]; renderApp(); }
 
 function renderCheck(){
   setSteps(1);
@@ -381,8 +399,11 @@ function buildNote(){
   const periodText = patient.period==='acute'?'первые дни после ОИИ':patient.period==='later'?'поздний восстановительный период':'10–14-е сутки после ОИИ';
   const sideText = patient.side==='r'?', правосторонний очаг':patient.side==='l'?', левосторонний очаг':'';
   const stazhText = patient.stazh?`, АГ ${patient.stazh} лет`:'';
+  const riskList=[patient.risk.ath&&'атеросклероз',patient.risk.dm&&'СД2',patient.risk.ihd&&'ИБС'].filter(Boolean).join(', ');
+  const riskText = riskList? `, ${riskList}`:'';
+  const repText = patient.reperfusion===true?'реперфузия проводилась':patient.reperfusion===false?'реперфузия не проводилась':'';
   let n=`КЛИНИЧЕСКАЯ ЗАМЕТКА · Ранний восстановительный период после ОИИ\n`;
-  n+=`Пациент: ${genderText}, ${periodText}${sideText}${stazhText}.\n\n`;
+  n+=`Пациент: ${genderText}, ${periodText}${sideText}${stazhText}${riskText}${repText?'. '+repText:''}.\n\n`;
   if(sel.fx){
     n+=`ЗАЩИТА ОТ ВТЭ — Фленокс 4000: 40 мг п/к 1 р/сут, до 14 дней. Эноксапарин снизил риск ВТЭ на 43% vs НФГ (PREVAIL, PMID 17448820).\n\n`;
   }
@@ -455,7 +476,7 @@ function renderSummary(){
     <button class="prim" onclick="doShare()">${shareIco()} Поделиться</button>
     <button onclick="doCopy()">${copyIco()} Копировать</button>
   </div>
-  <div style="text-align:center;margin:14px 0 4px"><button class="btn-ghost" onclick="sel={fx:false,li:false};patient={gender:null,period:null,side:null,stazh:null};step=0;renderApp()">↺ новый пациент</button></div>
+  <div style="text-align:center;margin:14px 0 4px"><button class="btn-ghost" onclick="sel={fx:false,li:false};patient={gender:null,period:null,side:null,stazh:null,reperfusion:null,risk:{ath:false,dm:false,ihd:false}};step=0;renderApp()">↺ новый пациент</button></div>
   <p class="disc">Источники: Sherman DG et al., PREVAIL, Lancet 2007 (PMID 17448820) · Alvarez-Sabín J et al., 2016 (PMID 26999113) · AVERT Trial, Lancet 2015 · AHA/ASA, Cochrane Collaboration · EXCITE Trial, Wolf et al., 2006 · Инструкции Фленокс 4000, Лира — Farmak. Инструмент поддержки клинического решения — не заменяет клиническое суждение, инструкцию препарата и действующие клинические рекомендации. При поддержке Farmak.</p>
   </div>`;
   return h;
