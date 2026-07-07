@@ -85,6 +85,7 @@ h1.title{font-family:var(--display);font-weight:600;font-size:25px;line-height:1
 .chip .box svg{width:13px;height:13px;opacity:0;transition:opacity .14s}
 .chip.sel .box svg{opacity:1}
 .chip .lbl{flex:1;font-size:13.5px;font-weight:500}
+.chip .lbl .subnote{display:block;font-size:11px;font-weight:400;color:var(--mute);margin-top:2px;line-height:1.35}
 .chip .pts{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--mute)}
 .chip.sel .pts{color:var(--navy)}
 
@@ -139,6 +140,8 @@ h1.title{font-family:var(--display);font-weight:600;font-size:25px;line-height:1
 .flag.bleed{border-color:#E7B7B1;background:var(--bleed-tint);color:var(--bleed)}
 
 .decision{border:1px solid var(--fx);background:linear-gradient(180deg,var(--fx-tint),#fff);border-radius:var(--r);padding:17px 16px;margin-bottom:14px;box-shadow:var(--sh-lg)}
+.decision.pending{border-color:#E7D2A2;background:linear-gradient(180deg,var(--warn-tint),#fff)}
+.decision.pending .dk{color:#8A5D12}
 .decision .dk{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--fx-deep);margin-bottom:7px}
 .decision .brandname{font-family:var(--display);font-size:24px;font-weight:700;color:var(--fx-deep);line-height:1}
 .decision .brandsub{font-size:11.5px;color:var(--ink-soft);margin-top:3px}
@@ -331,16 +334,18 @@ function updBar(){$('bar-score').className='';$('bar-score').textContent=fxScore
 
 /* ================= ШАГ 2: РИСК КРОВОТЕЧЕНИЯ (IMPROVE) ================= */
 const BLEED_FACTORS=[
-  'Активная гастродуоденальная язва','Кровотечение в предшествующие 3 месяца','Тромбоциты < 50×10⁹/л',
-  'Возраст ≥ 85 лет','Печёночная недостаточность (МНО > 1,5)','Тяжёлая почечная недостаточность (СКФ < 30)',
-  'Пребывание в ОРИТ/БИТ','Центральный венозный катетер','Ревматологическое заболевание','Мужской пол',
+  ['Активная гастродуоденальная язва',null],['Кровотечение в предшествующие 3 месяца',null],['Тромбоциты < 50×10⁹/л',null],
+  ['Возраст ≥ 85 лет','отдельный порог риска кровотечения — не путать с возрастом ≥ 70 в шкале ВТЭ (Padua, шаг 1)'],
+  ['Печёночная недостаточность (МНО > 1,5)',null],['Тяжёлая почечная недостаточность (СКФ < 30)',null],
+  ['Пребывание в ОРИТ/БИТ',null],['Центральный венозный катетер',null],['Ревматологическое заболевание',null],['Мужской пол',null],
 ];
 function buildBleedFactors(){
   let h='<div class="group"><div class="group-h"><b>Отметьте, если применимо</b><span>IMPROVE</span></div>';
-  BLEED_FACTORS.forEach((label,i)=>{
+  BLEED_FACTORS.forEach((it,i)=>{
     const on=bleed[i]!==undefined;
+    const [label,note]=it;
     h+=`<button class="chip ${on?'sel bleed':''}" onclick="togBleed(${i})">
-      <span class="box">${CHECK}</span><span class="lbl">${label}</span></button>`;
+      <span class="box">${CHECK}</span><span class="lbl">${label}${note?`<small class="subnote">${note}</small>`:''}</span></button>`;
   });
   h+='</div>';
   $('bleed-factors').innerHTML=h;
@@ -428,7 +433,7 @@ function tier(s){return s>=4?{k:'высокий',lvl:1}:{k:'низкий',lvl:0}
 function result(){
   const s=fxScore(),t=tier(s),v=crcl(),bf=bleedFlag();
   let verdict,vclass,go=false;
-  if(t.lvl>=1&&bf){verdict='Высокий риск ВТЭ, но есть фактор риска кровотечения — механическая профилактика / индивидуальное решение';vclass='v-caution';}
+  if(t.lvl>=1&&bf){verdict='Высокий риск ВТЭ, но есть фактор риска кровотечения — сначала контроль кровотечения';vclass='v-caution';}
   else if(t.lvl>=1){verdict='Фармакопрофилактика ВТЭ показана';vclass='v-go';go=true;}
   else{verdict='Низкий риск — фармакопрофилактика обычно не показана';vclass='v-low';}
 
@@ -457,7 +462,13 @@ function result(){
     </div>`;
     h+=`<div class="flag">${warnIco('#C0801A')}<div><b>При активном кровотечении</b> НМГ не стартовать до контроля гемостаза — механическая профилактика как временная опция.</div></div>`;
   } else if(vclass==='v-caution'){
-    h+=`<div class="flag info">${clockIco()}<div>Клинический риск ВТЭ высокий, но фактор риска кровотечения требует индивидуального решения врача — консультация по показаниям, механическая профилактика как первый шаг.</div></div>`;
+    h+=`<div class="decision pending">
+      <div class="dk">Возможный следующий шаг — после контроля кровотечения</div>
+      <div class="brandname">Фленокс 4000</div>
+      <div class="brandsub">эноксапарин · 4000 анти-Ха МЕ · профилактика ВТЭ — рассмотреть, когда фактор риска кровотечения устранён или под контролем</div>
+      <div class="note-mini">До этого момента: механическая профилактика ВТЭ и коррекция причины кровотечения. Решение о старте НМГ, сроках и дозе — за лечащим врачом, по результатам повторной оценки.</div>
+    </div>`;
+    h+=`<div class="flag info">${clockIco()}<div>Клинический риск ВТЭ высокий — после контроля кровотечения вернуться к оценке и повторно пройти шаг 2.</div></div>`;
   } else {
     h+=`<div class="flag info">${clockIco()}<div>Низкий риск — ранняя мобилизация и механическая профилактика. Повторно оценить риск при изменении статуса подвижности.</div></div>`;
   }
@@ -474,6 +485,7 @@ function noteText(s,t,verdict,v,bf,go){
   n+=`Решение: ${verdict}.\n`;
   if(bf)n+=`Отмечен фактор риска кровотечения (IMPROVE) — оценить противопоказания перед стартом НМГ.\n`;
   if(go)n+=`Рассмотреть: Фленокс 4000 (эноксапарин 40 мг п/к 1 р/сут), курс 6–14 суток.\n`;
+  else if(t.lvl>=1&&bf)n+=`После контроля кровотечения — рассмотреть Фленокс 4000 (эноксапарин 40 мг п/к 1 р/сут); до этого — механическая профилактика.\n`;
   if(v!==null)n+=`Клиренс креатинина ≈ ${v} мл/мин${v<30?' — осторожно, коррекция дозы':''}.\n`;
   n+=`Источник: Padua (PMID 20738765); IMPROVE Bleeding (PMID 20453069); MEDENOX (PMID 10477777).\n`;
   n+=`Инструмент поддержки решения; не заменяет клиническое суждение и инструкцию препарата. При поддержке Farmak.`;
