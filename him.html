@@ -549,7 +549,16 @@ function openModal(){
 }
 function closeModal(){ $('modal').classList.remove('open'); }
 
-function renderApp(){ $('root').innerHTML = render(); updateHeaderMark(); }
+const HIM_SCREENS=['hook','check','gap','context','resolution','followup'];
+let lastLoggedStep=-1;
+function renderApp(){
+  $('root').innerHTML = render();
+  updateHeaderMark();
+  if(step!==lastLoggedStep){
+    lastLoggedStep=step;
+    if(window.FarmakTrack)FarmakTrack.log('him', HIM_SCREENS[step]||('step'+step));
+  }
+}
 renderApp();
 </script>
 </body>
