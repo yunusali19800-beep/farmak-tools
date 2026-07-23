@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farmak — производитель</title>
+<style>
+  :root{
+    --bg-1:#0D59B1; --bg-2:#0A4A96;         /* синий фон страницы */
+    --brand:#0D59B1; --brand-dk:#0A4A96;
+    --ink:#0E2647; --soft:#44618A;          /* тёмный текст ВНУТРИ белых карточек */
+    --accent-soft:#E2EEFA; --accent-line:#BFD6EF;
+    --card:#FFFFFF; --card-line:#D3E1F0;
+    --on-blue:#FFFFFF; --on-blue-soft:rgba(255,255,255,.86);
+    --on-blue-line:rgba(255,255,255,.28);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--on-blue);background:linear-gradient(178deg,var(--bg-1) 0%,var(--bg-2) 100%);
+    background-attachment:fixed;min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:440px;margin:0 auto;padding:28px 22px 44px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.15em;
+    text-transform:uppercase;color:var(--brand);font-weight:700;padding:7px 14px;
+    border:1px solid var(--accent-line);border-radius:999px;background:var(--card);}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--brand)}
+  h1{font-size:32px;line-height:1.16;font-weight:800;letter-spacing:-.01em;margin:20px 0 14px;
+    color:var(--on-blue);text-shadow:0 1px 2px rgba(0,0,0,.12)}
+  .lede{font-size:17px;color:var(--on-blue-soft);font-weight:400}
+  .lede b{color:var(--on-blue);font-weight:600}
+  .lede .age{color:#FFFFFF;font-weight:700;border-bottom:1px solid var(--on-blue-line);padding-bottom:1px}
+  .chain{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:24px 0 8px;
+    padding:18px 12px;border-radius:16px;background:var(--card);border:1px solid var(--card-line);
+    box-shadow:0 8px 22px rgba(6,32,66,.18);}
+  .node{display:flex;flex-direction:column;align-items:center;gap:9px;flex:1;text-align:center}
+  .node svg{width:32px;height:32px;color:var(--brand)}
+  .node span{font-size:13px;font-weight:600;color:var(--ink)}
+  .arrow{color:var(--brand);flex:0 0 auto;opacity:.55}
+  .arrow svg{width:16px;height:16px;display:block}
+  .chain-cap{font-size:13px;color:var(--on-blue-soft);text-align:center;letter-spacing:.01em}
+  .facts{display:flex;flex-direction:column;gap:12px;margin:26px 0}
+  .fact{display:flex;gap:15px;align-items:flex-start;padding:17px;border-radius:15px;
+    background:var(--card);border:1px solid var(--card-line);box-shadow:0 8px 22px rgba(6,32,66,.16);}
+  .fact .ic{flex:0 0 auto;width:46px;height:46px;border-radius:12px;display:flex;align-items:center;
+    justify-content:center;background:var(--accent-soft);border:1px solid var(--accent-line);}
+  .fact .ic svg{width:24px;height:24px;color:var(--brand)}
+  .fact h3{font-size:17px;font-weight:700;margin-bottom:4px;color:var(--ink)}
+  .fact p{font-size:15px;color:var(--soft);line-height:1.48}
+  .actions{display:flex;flex-direction:column;gap:11px;margin:28px 0 22px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:11px;text-decoration:none;
+    font-weight:700;font-size:16px;padding:16px 18px;border-radius:13px;
+    transition:transform .08s ease,background .15s ease;}
+  .btn:active{transform:scale(.985)}
+  .btn svg{width:20px;height:20px;flex:0 0 auto}
+  .btn-primary{background:#FFFFFF;color:var(--brand);box-shadow:0 8px 22px rgba(6,32,66,.22)}
+  .btn-primary:hover{background:#F1F6FC}
+  .btn-ghost{background:rgba(255,255,255,.06);color:var(--on-blue);border:1.5px solid var(--on-blue-line)}
+  .btn-ghost:hover{background:rgba(255,255,255,.14)}
+  .foot{margin-top:26px;padding-top:20px;border-top:1px solid var(--on-blue-line);text-align:center}
+  .foot .brand{font-size:15px;font-weight:800;letter-spacing:.02em;margin-bottom:9px;color:var(--on-blue)}
+  .foot .brand span{color:#FFFFFF}
+  .foot .disc{font-size:12.5px;color:rgba(255,255,255,.72);line-height:1.55}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span>Производитель Farmak</span>
+    <h1>Полный цикл — от субстанции до готового препарата</h1>
+    <p class="lede">Farmak <b>сам синтезирует действующее вещество</b> — основу препарата. Европейский стандарт GMP, <span class="age">завод с 1925 года</span>.</p>
+    <div class="chain">
+      <div class="node">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="5" r="2.2"/><circle cx="5.5" cy="16" r="2.2"/><circle cx="18.5" cy="16" r="2.2"/><path d="M11 6.7 6.8 14M13 6.7 17.2 14M7.6 16h8.8"/></svg>
+        <span>Молекула</span>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="node">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 3h8M9 3v5l-4.5 9A2 2 0 0 0 6.3 20h11.4a2 2 0 0 0 1.8-3L15 8V3"/><path d="M7.5 14h9"/></svg>
+        <span>Субстанция</span>
+      </div>
+      <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12h14M13 6l6 6-6 6"/></svg></div>
+      <div class="node">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="8" width="14" height="12" rx="2"/><path d="M5 8l3-4h8l3 4M9 13h6"/></svg>
+        <span>Препарат</span>
+      </div>
+    </div>
+    <p class="chain-cap">Контроль качества на каждом этапе — внутри одной компании</p>
+    <div class="facts">
+      <div class="fact">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v4M12 2 8 4M12 2l4 2M5 8l7 4 7-4M5 8v8l7 4 7-4V8M12 12v10"/></svg></div>
+        <div><h3>Всё производство — своё</h3>
+          <p>Farmak не отдаёт ни одной стадии на сторону — препарат создаётся на собственных мощностях от начала до конца.</p></div>
+      </div>
+      <div class="fact">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3Z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div><h3>Европейский GMP · 90+ аудитов</h3>
+          <p>Производство отвечает европейскому стандарту качества GMP и прошло более 90 международных инспекций за последние годы.</p></div>
+      </div>
+      <div class="fact">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21c-2.5-2.6-3.8-5.7-3.8-9S9.5 5.6 12 3Z"/></svg></div>
+        <div><h3>Экспорт в 60+ стран</h3>
+          <p>Препараты Farmak поставляются более чем в 60 стран, включая Великобританию, Германию и ОАЭ (новые поставки — 2026).</p></div>
+      </div>
+    </div>
+    <div class="actions">
+      <a class="btn btn-primary" href="https://youtu.be/R5Q8e0v7Dn8" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7L8 5Z"/></svg>
+        Смотреть экскурсию по заводу
+      </a>
+      <a id="instr" class="btn btn-ghost" href="flertis_instrukciya.pdf" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>
+        <span id="instr-label">Инструкция Флертиса</span>
+      </a>
+      <a class="btn btn-ghost" href="https://farmak.uz/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M3.5 9h17M3.5 15h17M12 3c-2.5 2.6-3.8 5.7-3.8 9S9.5 18.4 12 21M12 3c2.5 2.6 3.8 5.7 3.8 9S14.5 18.4 12 21"/></svg>
+        Официальный сайт Farmak
+      </a>
+    </div>
+    <div class="foot">
+      <div class="brand">Завод <span>Farmak</span> · с 1925 года</div>
+      <p class="disc">Информация о производителе для работников фармацевтической розницы. АО «Фармак», Украина.</p>
+    </div>
+  </div>
+  <script>
+    (function(){
+      var INSTR = { flertis: {label:"Инструкция Флертиса", url:"flertis_instrukciya.pdf"} };
+      var p = new URLSearchParams(location.search).get("p") || "flertis";
+      var meta = INSTR[p] || INSTR.flertis;
+      var btn = document.getElementById("instr");
+      document.getElementById("instr-label").textContent = meta.label;
+      btn.href = meta.url;
+    })();
+  </script>
+</body>
+</html>
