@@ -122,7 +122,11 @@
   </div>
   <script>
     (function(){
-      var INSTR = { flertis: {label:"Инструкция Флертиса", url:"flertis_instrukciya.pdf"} };
+      var INSTR = {
+        flertis: {label:"Инструкция Флертиса", url:"flertis_instrukciya.pdf"},
+        gliyaton: {label:"Инструкция Глиятона", url:"gliyaton_instrukciya.pdf"},
+        lira: {label:"Инструкция Лиры", url:"lira_instrukciya.pdf"}
+      };
       var p = new URLSearchParams(location.search).get("p") || "flertis";
       var meta = INSTR[p] || INSTR.flertis;
       var btn = document.getElementById("instr");
