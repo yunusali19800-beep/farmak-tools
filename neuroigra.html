@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1A2E5A">
+<title>Разминка · нейро-викторина</title>
+<style>
+  :root{
+    --bg1:#0b1a3d; --bg2:#1A2E5A; --bg3:#0a1530;
+    --gold:#E8B84B; --gold2:#c9962a;
+    --blue:#2f6fd6; --blue-d:#1b4a99;
+    --good:#22a06b; --bad:#d9453f;
+    --card:rgba(255,255,255,.07); --line:rgba(255,255,255,.16);
+    --ink:#eaf0fb;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    color:var(--ink); overflow:hidden; -webkit-user-select:none;user-select:none;
+    background:
+      radial-gradient(900px 500px at 50% -8%, #24479a 0%, transparent 62%),
+      linear-gradient(170deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%);
+  }
+  .app{position:fixed;inset:0;max-width:480px;margin:0 auto;display:flex;flex-direction:column;
+    padding:14px 16px calc(14px + env(safe-area-inset-bottom));}
+  .hidden{display:none!important;}
+  .center{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:16px;overflow:auto;}
+
+  .logo{font-size:36px;font-weight:900;letter-spacing:3px;
+    background:linear-gradient(180deg,#fff,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .kicker{font-size:12px;letter-spacing:4px;text-transform:uppercase;opacity:.8;}
+  .lede{font-size:14px;line-height:1.55;opacity:.92;max-width:330px;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;}
+  .lede b{color:var(--gold);}
+  .best{font-size:13px;opacity:.85;}
+  .best b{color:var(--gold);}
+
+  .topics{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:340px;}
+  .chip{border:1px solid var(--line);background:var(--card);color:#fff;border-radius:999px;padding:9px 15px;font-size:13px;font-weight:700;cursor:pointer;transition:.12s;}
+  .chip.on{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#0c1730;border-color:transparent;}
+
+  .btn{border:none;border-radius:14px;padding:15px 30px;font-size:17px;font-weight:800;color:#0c1730;cursor:pointer;
+    background:linear-gradient(180deg,var(--gold),var(--gold2));box-shadow:0 8px 22px rgba(232,184,75,.35);
+    transition:transform .06s;width:100%;max-width:300px;letter-spacing:.5px;}
+  .btn:active{transform:scale(.97);}
+  .btn.ghost{background:var(--card);color:#fff;border:1px solid var(--line);box-shadow:none;}
+  .spons{font-size:12px;opacity:.6;letter-spacing:2px;}
+  .disc{font-size:10px;opacity:.5;line-height:1.5;max-width:330px;}
+  .back{font-size:13px;opacity:.7;cursor:pointer;text-decoration:underline;}
+
+  .top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;}
+  .rank{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;flex:1;min-width:0;}
+  .rank .lab{font-size:10px;letter-spacing:2px;opacity:.7;text-transform:uppercase;}
+  .rank .val{font-size:15px;font-weight:800;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .qno{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;text-align:center;}
+  .qno .big{font-size:20px;font-weight:900;}
+  .qno .small{font-size:10px;opacity:.7;}
+  .laddbtn{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:18px;cursor:pointer;}
+
+  .lifelines{display:flex;gap:8px;margin-bottom:10px;}
+  .ll{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 6px;text-align:center;cursor:pointer;transition:.15s;}
+  .ll .ic{font-size:18px;}
+  .ll .t{font-size:10px;opacity:.85;margin-top:3px;}
+  .ll.used{opacity:.3;pointer-events:none;text-decoration:line-through;}
+
+  .qcard{flex:0 0 auto;background:linear-gradient(180deg,rgba(47,111,214,.22),rgba(27,74,153,.14));
+    border:1px solid var(--line);border-radius:16px;padding:18px 16px;min-height:112px;display:flex;align-items:center;
+    font-size:16.5px;font-weight:700;line-height:1.4;text-align:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,.2);}
+
+  .answers{display:flex;flex-direction:column;gap:9px;margin-top:12px;}
+  .ans{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid var(--line);
+    background:var(--card);border-radius:14px;padding:13px 13px;font-size:15px;font-weight:600;color:#fff;cursor:pointer;transition:.12s;}
+  .ans:active{transform:scale(.99);}
+  .ans .badge{width:30px;height:30px;flex:0 0 auto;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    font-weight:900;background:linear-gradient(180deg,var(--gold),var(--gold2));color:#0c1730;font-size:15px;}
+  .ans.good{border-color:var(--good);background:rgba(34,160,107,.28);}
+  .ans.bad{border-color:var(--bad);background:rgba(217,69,63,.28);}
+  .ans.dim{opacity:.28;pointer-events:none;}
+
+  .hint{margin-top:10px;background:rgba(232,184,75,.12);border:1px solid rgba(232,184,75,.4);border-radius:12px;
+    padding:11px 13px;font-size:13px;line-height:1.4;display:none;}
+  .hint.show{display:block;}
+  .hint b{color:var(--gold);}
+
+  .concard{display:none;gap:8px;margin-top:10px;}
+  .concard.show{display:flex;}
+  .conbar{flex:1;text-align:center;}
+  .conbar .bar{height:64px;background:rgba(255,255,255,.1);border-radius:8px;display:flex;align-items:flex-end;overflow:hidden;}
+  .conbar .fill{width:100%;background:linear-gradient(180deg,var(--blue),var(--blue-d));border-radius:8px 8px 0 0;transition:height .5s;}
+  .conbar .cl{font-size:12px;font-weight:800;margin-top:4px;}
+  .conbar .pc{font-size:11px;opacity:.75;}
+
+  .sheet{position:fixed;inset:0;z-index:20;background:rgba(6,14,34,.9);backdrop-filter:blur(4px);
+    display:none;flex-direction:column;padding:18px;}
+  .sheet.show{display:flex;}
+  .sheet h2{text-align:center;font-size:14px;letter-spacing:2px;opacity:.8;text-transform:uppercase;margin-bottom:12px;}
+  .ladder{flex:1;overflow:auto;display:flex;flex-direction:column-reverse;gap:5px;}
+  .rung{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.06);font-size:14px;}
+  .rung .n{opacity:.6;font-weight:700;width:26px;}
+  .rung.cur{background:linear-gradient(90deg,rgba(232,184,75,.35),rgba(232,184,75,.1));border:1px solid var(--gold);font-weight:800;}
+  .rung.safe .n{color:var(--gold);}
+  .rung .star{color:var(--gold);}
+  .sheet .close{margin-top:12px;background:var(--gold);border:none;border-radius:12px;padding:14px;color:#0c1730;font-weight:800;font-size:16px;cursor:pointer;}
+
+  .end .em{font-size:56px;}
+  .end h2{font-size:24px;font-weight:900;}
+  .end .rankbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;max-width:320px;}
+  .end .rankbox .r{font-size:22px;font-weight:900;color:var(--gold);}
+  .end .rankbox .s{font-size:13px;opacity:.85;margin-top:6px;}
+  .flash{position:absolute;left:0;right:0;top:44%;text-align:center;font-size:46px;font-weight:900;opacity:0;transition:.2s;pointer-events:none;}
+  .flash.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- START -->
+  <section id="start" class="center">
+    <div class="kicker">нейро-викторина</div>
+    <div class="logo">РАЗМИНКА</div>
+    <div class="best" id="bestLine"></div>
+    <div class="lede">15 вопросов по неврологии. От <b>студента</b> до <b>академика</b>. Три подсказки. Спешить некуда.</div>
+    <div style="font-size:12px;opacity:.7;letter-spacing:1px;">ВЫБЕРИ ТЕМУ</div>
+    <div class="topics" id="topics"></div>
+    <button class="btn" onclick="Q.start()">Начать</button>
+    <button class="btn ghost" onclick="Q.openLadder()">Лестница званий</button>
+    
+    <div class="disc">Развлекательно-познавательный материал для медицинских специалистов. Не является рекламой лекарственных средств и не заменяет клинические рекомендации.</div>
+  </section>
+
+  <!-- PLAY -->
+  <section id="play" class="hidden" style="flex:1;display:flex;flex-direction:column;position:relative;">
+    <div class="top">
+      <div class="rank"><div class="lab">Звание</div><div class="val" id="rankVal">Студент</div></div>
+      <div class="qno"><div class="big" id="qNo">1</div><div class="small">из 15</div></div>
+      <div class="laddbtn" onclick="Q.openLadder()">🪜</div>
+    </div>
+    <div class="lifelines">
+      <div class="ll" id="ll5050" onclick="Q.use5050()"><div class="ic">➗</div><div class="t">50 : 50</div></div>
+      <div class="ll" id="llColleague" onclick="Q.useColleague()"><div class="ic">👨‍⚕️</div><div class="t">Коллега</div></div>
+      <div class="ll" id="llConsilium" onclick="Q.useConsilium()"><div class="ic">👥</div><div class="t">Консилиум</div></div>
+    </div>
+    <div class="qcard" id="qText">—</div>
+    <div class="answers" id="answers"></div>
+    <div class="hint" id="hint"></div>
+    <div class="concard" id="concard"></div>
+    <div class="flash" id="flash"></div>
+  </section>
+
+  <!-- LADDER -->
+  <section class="sheet" id="sheet">
+    <h2>Лестница званий</h2>
+    <div class="ladder" id="ladder"></div>
+    <button class="close" onclick="Q.closeLadder()">Закрыть</button>
+  </section>
+
+  <!-- END -->
+  <section id="end" class="center end hidden">
+    <div class="em" id="endEm">🎓</div>
+    <h2 id="endTtl">—</h2>
+    <div class="rankbox">
+      <div class="r" id="endRank">—</div>
+      <div class="s" id="endSub">—</div>
+    </div>
+    <div class="best" id="endBest"></div>
+    <button class="btn" onclick="Q.toStart()">Сменить тему</button>
+    <button class="btn ghost" onclick="Q.start()">Ещё раз</button>
+    
+  </section>
+
+</div>
+
+<script>
+/* ============================================================================
+   БАНК ВОПРОСОВ · НЕЙРО-РАЗМИНКА
+   ----------------------------------------------------------------------------
+   Тематика: ТОЛЬКО неврология (инсульт, анатомия/физиология НС, заболевания,
+   неотложная неврология). Брендов препаратов в контенте НЕТ.
+
+   ⚠ СТАТУС: ЧЕРНОВОЙ. Требует клинической вычитки (ГЛ) перед выходом в поле.
+
+   КАК ДОСЫПАТЬ ВОПРОС — добавь строку в массив NEURO_Q:
+     { t:"stroke", d:2, q:"Текст вопроса?",
+       o:["Вариант 1","Вариант 2","Вариант 3","Вариант 4"], a:1, h:"Подсказка коллеги" }
+     t — тема:  "stroke" (инсульт) | "anatomy" (анатомия/физиология) |
+                "disease" (заболевания/синдромы) | "emergency" (неотложка/диагностика)
+     d — сложность: 1 (лёгкий) | 2 (средний) | 3 (сложный)
+     o — РОВНО 4 варианта
+     a — индекс правильного ответа в массиве o (0,1,2,3)
+     h — короткая подсказка для механики «Коллега»
+   Игра сама перемешивает варианты — правильный можно ставить на любую позицию.
+   ============================================================================ */
+
+const NEURO_Q = [
+
+/* ---------- ИНСУЛЬТ (stroke) ---------- */
+{t:"stroke",d:1,q:"Какой орган поражается при инсульте?",o:["Сердце","Головной мозг","Печень","Лёгкие"],a:1,h:"Само название говорит об «ударе» по этому органу."},
+{t:"stroke",d:1,q:"Как расшифровывается ОНМК?",o:["Общее нарушение мышечной координации","Острое нарушение мозгового кровообращения","Органная недостаточность мозговой коры","Обширный некроз мозжечка"],a:1,h:"Это медицинский синоним слова «инсульт»."},
+{t:"stroke",d:1,q:"Инсульт — это заболевание прежде всего?",o:["Сосудов головного мозга","Лёгких","Печени","Костей черепа"],a:0,h:"Нарушается кровоснабжение мозга."},
+{t:"stroke",d:1,q:"Какой врач в первую очередь ведёт пациента с инсультом?",o:["Дерматолог","Невролог","Офтальмолог","Уролог"],a:1,h:"Специалист по нервной системе."},
+{t:"stroke",d:2,q:"Какой тип инсульта встречается чаще всего?",o:["Геморрагический","Ишемический","Субарахноидальный","Венозный"],a:1,h:"На него приходится около 80% случаев."},
+{t:"stroke",d:2,q:"Мнемоника FAST помогает быстро распознать?",o:["Инфаркт","Инсульт","Сепсис","Аллергию"],a:1,h:"Лицо — Рука — Речь — Время."},
+{t:"stroke",d:2,q:"Что означает буква «T» в мнемонике FAST?",o:["Температура","Время","Тремор","Тонус"],a:1,h:"Напоминание, что при инсульте нельзя терять его."},
+{t:"stroke",d:2,q:"Какая шкала оценивает тяжесть инсульта?",o:["Шкала Апгар","Шкала NIHSS","Шкала Борга","Шкала Апфель"],a:1,h:"Аббревиатура начинается с «NIH»."},
+{t:"stroke",d:2,q:"Геморрагический инсульт — это?",o:["Кровоизлияние в мозг","Закупорка вены","Спазм мышцы","Воспаление оболочек"],a:0,h:"«Гемо» — про кровь."},
+{t:"stroke",d:2,q:"Метод растворения тромба лекарством при ишемическом инсульте?",o:["Тромболизис","Диализ","Плазмаферез","Лаваж"],a:0,h:"«Лизис» — растворение."},
+{t:"stroke",d:2,q:"Внезапная слабость в одной половине тела называется?",o:["Парапарез","Гемипарез","Тетрапарез","Моноплегия"],a:1,h:"«Геми» — половина."},
+{t:"stroke",d:2,q:"Первое действие при подозрении на инсульт по FAST?",o:["Дать анальгетик","Вызвать скорую помощь","Уложить спать","Измерить рост"],a:1,h:"Время критично — нужна экстренная бригада."},
+{t:"stroke",d:2,q:"Модифицируемый (управляемый) фактор риска инсульта?",o:["Возраст","Пол","Артериальная гипертензия","Наследственность"],a:2,h:"Единственный из перечисленных, который можно контролировать."},
+{t:"stroke",d:2,q:"«Золотой час» в неотложной помощи подчёркивает важность?",o:["Отдыха пациента","Раннего начала лечения","Обильного питья","Полного покоя сутки"],a:1,h:"Чем раньше — тем лучше исход."},
+{t:"stroke",d:2,q:"Инсульт, симптомы которого замечены при пробуждении, называют?",o:["Ночным","Инсультом с неизвестным временем начала","Лакунарным","Транзиторным"],a:1,h:"Точное время старта установить нельзя."},
+{t:"stroke",d:3,q:"Какая артерия чаще всего поражается при ишемическом инсульте?",o:["Передняя мозговая","Средняя мозговая","Задняя мозговая","Позвоночная"],a:1,h:"Кровоснабжает большую часть полушария; сокращённо СМА."},
+{t:"stroke",d:3,q:"Ишемическая полутень (пенумбра) — это зона?",o:["Необратимого некроза","Обратимо повреждённой ткани вокруг очага","Кровоизлияния","Отёка без ишемии"],a:1,h:"Её ещё можно спасти при своевременном лечении."},
+{t:"stroke",d:3,q:"Классическое окно для внутривенного тромболизиса при ишемическом инсульте?",o:["До 1 часа","До 4,5 часов","До 12 часов","До 48 часов"],a:1,h:"Меньше пяти часов от начала симптомов."},
+{t:"stroke",d:3,q:"Механическое удаление тромба из мозговой артерии называется?",o:["Тромболизис","Тромбэктомия","Эмболизация","Ангиопластика"],a:1,h:"«Эктомия» — удаление."},
+{t:"stroke",d:3,q:"Шкала ASPECTS оценивает?",o:["Уровень сознания","Ранние ишемические изменения на КТ","Силу мышц","Нарушения речи"],a:1,h:"Считается по данным компьютерной томографии."},
+{t:"stroke",d:3,q:"Нарушение речи при поражении зоны Брока — это афазия?",o:["Сенсорная","Моторная","Амнестическая","Тотальная"],a:1,h:"Понимание сохранено, но говорить трудно."},
+{t:"stroke",d:3,q:"Нарушение понимания речи при поражении зоны Вернике — это афазия?",o:["Моторная","Сенсорная","Динамическая","Проводниковая"],a:1,h:"Речь беглая, но пациент не понимает обращённую."},
+{t:"stroke",d:3,q:"Повреждение нейронов свободными радикалами происходит в процессе?",o:["Гликолиз","Окислительный стресс","Апоптоз","Фагоцитоз"],a:1,h:"Связан с окислением и антиоксидантной защитой."},
+{t:"stroke",d:3,q:"Гибель нейронов при ишемии из-за избытка глутамата называется?",o:["Апоптоз","Эксайтотоксичность","Аутофагия","Пиноцитоз"],a:1,h:"«Возбуждающая токсичность»."},
+{t:"stroke",d:3,q:"Транзиторная ишемическая атака отличается от инсульта тем, что?",o:["Симптомы полностью обратимы","Всегда с кровоизлиянием","Длится неделями","Не даёт симптомов"],a:0,h:"Без стойкого инфаркта, симптомы уходят."},
+{t:"stroke",d:3,q:"Виллизиев круг — это?",o:["Зона моторной коры","Артериальное кольцо в основании мозга","Отдел мозжечка","Оболочка нерва"],a:1,h:"Обеспечивает коллатеральное кровоснабжение мозга."},
+{t:"stroke",d:3,q:"Шкала Рэнкина (mRS) оценивает?",o:["Тяжесть боли","Степень инвалидизации после инсульта","Уровень глюкозы","Остроту зрения"],a:1,h:"Функциональный исход и зависимость от помощи."},
+
+/* ---------- АНАТОМИЯ И ФИЗИОЛОГИЯ (anatomy) ---------- */
+{t:"anatomy",d:1,q:"Основная клетка нервной системы?",o:["Эритроцит","Нейрон","Гепатоцит","Остеоцит"],a:1,h:"Проводит нервный импульс."},
+{t:"anatomy",d:1,q:"Головной и спинной мозг вместе образуют?",o:["Периферическую НС","Центральную нервную систему","Вегетативную НС","Соматическую НС"],a:1,h:"Сокращённо — ЦНС."},
+{t:"anatomy",d:1,q:"Отросток нейрона, проводящий импульс ОТ тела клетки?",o:["Дендрит","Аксон","Синапс","Ядро"],a:1,h:"Обычно длинный и один."},
+{t:"anatomy",d:1,q:"Короткие ветвящиеся отростки, принимающие сигналы?",o:["Аксоны","Дендриты","Миелин","Глия"],a:1,h:"Их много, они «ветвятся»."},
+{t:"anatomy",d:2,q:"Оболочка нервного волокна, ускоряющая проведение импульса?",o:["Аксолемма","Миелин","Эндоневрий","Сарколемма"],a:1,h:"Её разрушение — при рассеянном склерозе."},
+{t:"anatomy",d:2,q:"Место контакта между двумя нейронами?",o:["Синапс","Десмосома","Нексус","Щель"],a:0,h:"Здесь работает нейромедиатор."},
+{t:"anatomy",d:2,q:"Отдел мозга, отвечающий за координацию и равновесие?",o:["Гипоталамус","Мозжечок","Гиппокамп","Таламус"],a:1,h:"Расположен под затылочными долями."},
+{t:"anatomy",d:2,q:"Сколько пар черепных нервов у человека?",o:["10","12","14","16"],a:1,h:"На две больше десяти."},
+{t:"anatomy",d:2,q:"Доля коры, отвечающая за зрение?",o:["Лобная","Теменная","Затылочная","Височная"],a:2,h:"Находится в задней части головы."},
+{t:"anatomy",d:2,q:"Доля коры, где расположена первичная моторная зона?",o:["Лобная","Затылочная","Височная","Островковая"],a:0,h:"Передняя доля мозга."},
+{t:"anatomy",d:2,q:"Структура, соединяющая два полушария мозга?",o:["Мост","Мозолистое тело","Свод","Ножка мозга"],a:1,h:"Крупнейший пучок белого вещества."},
+{t:"anatomy",d:2,q:"Жидкость, омывающая головной и спинной мозг?",o:["Лимфа","Ликвор","Плазма","Синовия"],a:1,h:"Цереброспинальная жидкость."},
+{t:"anatomy",d:2,q:"Периферическая нервная система делится на соматическую и?",o:["Центральную","Вегетативную","Лимбическую","Ретикулярную"],a:1,h:"Управляет внутренними органами непроизвольно."},
+{t:"anatomy",d:2,q:"Серое вещество мозга образовано преимущественно?",o:["Аксонами","Телами нейронов","Миелином","Сосудами"],a:1,h:"Здесь «сидят» сами клетки."},
+{t:"anatomy",d:2,q:"Черепной нерв, отвечающий за зрение?",o:["I обонятельный","II зрительный","III глазодвигательный","V тройничный"],a:1,h:"Второй по счёту."},
+{t:"anatomy",d:3,q:"Ион, критичный для генерации потенциала действия?",o:["Железо","Натрий","Цинк","Медь"],a:1,h:"Его обозначают Na⁺."},
+{t:"anatomy",d:3,q:"Нейромедиатор нервно-мышечного синапса?",o:["Дофамин","Ацетилхолин","Серотонин","Гистамин"],a:1,h:"Блокируется, например, ядом кураре."},
+{t:"anatomy",d:3,q:"Основной тормозный нейромедиатор ЦНС?",o:["Глутамат","ГАМК","Адреналин","Норадреналин"],a:1,h:"Гамма-аминомасляная кислота."},
+{t:"anatomy",d:3,q:"Основной возбуждающий нейромедиатор ЦНС?",o:["ГАМК","Глутамат","Глицин","Мелатонин"],a:1,h:"Его избыток ведёт к эксайтотоксичности."},
+{t:"anatomy",d:3,q:"Отдел ствола, где расположены дыхательный и сосудодвигательный центры?",o:["Средний мозг","Продолговатый мозг","Мозжечок","Таламус"],a:1,h:"Самый нижний отдел ствола."},
+{t:"anatomy",d:3,q:"Клетки глии, образующие миелин в ЦНС?",o:["Астроциты","Олигодендроциты","Микроглия","Эпендимоциты"],a:1,h:"«Олиго» — немного отростков."},
+{t:"anatomy",d:3,q:"Клетки, образующие миелин в периферической нервной системе?",o:["Астроциты","Шванновские клетки","Микроглия","Олигодендроциты"],a:1,h:"Названы по фамилии учёного."},
+{t:"anatomy",d:3,q:"Структура мозга, ключевая для формирования памяти?",o:["Гиппокамп","Мозжечок","Мост","Эпифиз"],a:0,h:"Форма напоминает морского конька."},
+{t:"anatomy",d:3,q:"«Ретрансляционная станция» сенсорной информации в мозге?",o:["Гипоталамус","Таламус","Гипофиз","Миндалина"],a:1,h:"Почти все чувствительные пути идут через него."},
+{t:"anatomy",d:3,q:"Структура, регулирующая температуру, голод и жажду?",o:["Таламус","Гипоталамус","Мозжечок","Продолговатый мозг"],a:1,h:"«Под таламусом»."},
+{t:"anatomy",d:3,q:"Белое вещество мозга образовано преимущественно?",o:["Телами нейронов","Миелинизированными аксонами","Сосудами","Глиальными ядрами"],a:1,h:"Белый цвет даёт миелин."},
+{t:"anatomy",d:3,q:"Гематоэнцефалический барьер защищает мозг от?",o:["Перегрева","Проникновения веществ из крови","Излучения","Механических травм"],a:1,h:"Избирательно пропускает вещества в мозг."},
+{t:"anatomy",d:3,q:"Черепной нерв, иннервирующий большинство внутренних органов?",o:["Тройничный","Блуждающий","Лицевой","Подъязычный"],a:1,h:"Самый «длинный» из черепных, X пара."},
+
+/* ---------- ЗАБОЛЕВАНИЯ И СИНДРОМЫ (disease) ---------- */
+{t:"disease",d:1,q:"Повторяющиеся судорожные приступы — это?",o:["Мигрень","Эпилепсия","Невралгия","Миастения"],a:1,h:"Приступы возникают из-за разрядов в мозге."},
+{t:"disease",d:2,q:"Дефицит дофамина связан с болезнью?",o:["Альцгеймера","Паркинсона","Меньера","Вильсона"],a:1,h:"Проявляется тремором покоя и скованностью."},
+{t:"disease",d:2,q:"Тремор покоя, ригидность и брадикинезия — триада при?",o:["Рассеянном склерозе","Болезни Паркинсона","Эпилепсии","Мигрени"],a:1,h:"Дефицит дофамина."},
+{t:"disease",d:2,q:"Наиболее частая причина деменции?",o:["Болезнь Паркинсона","Болезнь Альцгеймера","Инсульт","Эпилепсия"],a:1,h:"Связана с бета-амилоидными бляшками."},
+{t:"disease",d:2,q:"Односторонняя пульсирующая головная боль, часто с аурой?",o:["Мигрень","Менингит","Невралгия","Энцефалит"],a:0,h:"Нередко сопровождается свето- и звукобоязнью."},
+{t:"disease",d:2,q:"Воспаление оболочек головного мозга?",o:["Энцефалит","Менингит","Миелит","Неврит"],a:1,h:"«Менинго» — оболочки."},
+{t:"disease",d:2,q:"Воспаление вещества головного мозга?",o:["Менингит","Энцефалит","Арахноидит","Радикулит"],a:1,h:"«Энцефало» — головной мозг."},
+{t:"disease",d:2,q:"Ущемление срединного нерва в области запястья?",o:["Синдром запястного канала","Плексит","Синдром Гийена–Барре","Радикулопатия"],a:0,h:"Частая жалоба — онемение пальцев кисти."},
+{t:"disease",d:2,q:"Защемление седалищного нерва проявляется болью по?",o:["Передней поверхности живота","Задней поверхности ноги","Затылку","Кисти"],a:1,h:"Крупнейший нерв тела, идёт в ногу."},
+{t:"disease",d:3,q:"Демиелинизирующее заболевание ЦНС, чаще у молодых?",o:["Болезнь Паркинсона","Рассеянный склероз","Болезнь Альцгеймера","Мигрень"],a:1,h:"Разрушается миелин, течение с обострениями."},
+{t:"disease",d:3,q:"Бета-амилоидные бляшки в мозге характерны для?",o:["Эпилепсии","Болезни Альцгеймера","Мигрени","Менингита"],a:1,h:"Ведущая причина деменции у пожилых."},
+{t:"disease",d:3,q:"Прогрессирующее заболевание с поражением двигательных мотонейронов?",o:["Рассеянный склероз","Боковой амиотрофический склероз","Миастения","Полиомиелит"],a:1,h:"Сокращённо — БАС."},
+{t:"disease",d:3,q:"Слабость мышц, нарастающая при нагрузке (нарушение нервно-мышечной передачи)?",o:["Миастения","Миопатия","Полинейропатия","Плексопатия"],a:0,h:"Часто начинается с опущения века."},
+{t:"disease",d:3,q:"Острая аутоиммунная полинейропатия с восходящим параличом?",o:["Синдром Гийена–Барре","Синдром Горнера","Синдром Броун-Секара","Синдром Вебера"],a:0,h:"Слабость «поднимается» от ног вверх."},
+{t:"disease",d:3,q:"«Стреляющая» приступообразная боль в области лица?",o:["Мигрень","Невралгия тройничного нерва","Кластерная боль","Синусит"],a:1,h:"По ходу V пары черепных нервов."},
+{t:"disease",d:3,q:"Внезапный односторонний парез мимических мышц (паралич Белла) — поражение?",o:["Тройничного нерва","Лицевого нерва","Зрительного нерва","Блуждающего нерва"],a:1,h:"VII пара черепных нервов."},
+{t:"disease",d:3,q:"Приступы головокружения, шум в ушах и снижение слуха характерны для?",o:["Мигрени","Болезни Меньера","Эпилепсии","Невралгии"],a:1,h:"Поражается внутреннее ухо."},
+{t:"disease",d:3,q:"Наследственное заболевание с хореей и деменцией?",o:["Болезнь Гентингтона","Болезнь Паркинсона","Рассеянный склероз","Миастения"],a:0,h:"Аутосомно-доминантное, с непроизвольными движениями."},
+{t:"disease",d:3,q:"Поражение периферических нервов, частое при сахарном диабете?",o:["Миелит","Полинейропатия","Менингит","Энцефалит"],a:1,h:"«Поли» — множественное поражение нервов."},
+
+/* ---------- НЕОТЛОЖКА И ДИАГНОСТИКА (emergency) ---------- */
+{t:"emergency",d:1,q:"Что оценивает шкала комы Глазго?",o:["Тяжесть боли","Уровень сознания","Тяжесть инсульта","Степень одышки"],a:1,h:"Открывание глаз, речь, движения."},
+{t:"emergency",d:1,q:"Полная утрата сознания, из которой пациента нельзя вывести?",o:["Обморок","Кома","Сон","Сопор"],a:1,h:"Самое глубокое угнетение сознания."},
+{t:"emergency",d:2,q:"Метод регистрации электрической активности мозга?",o:["ЭКГ","ЭЭГ","ЭМГ","УЗИ"],a:1,h:"«Электроэнцефалография»."},
+{t:"emergency",d:2,q:"Люмбальная пункция позволяет исследовать?",o:["Кровь","Ликвор","Мочу","Желчь"],a:1,h:"Спинномозговую жидкость."},
+{t:"emergency",d:2,q:"Основной метод в первые минуты при подозрении на инсульт (для исключения кровоизлияния)?",o:["ЭЭГ","КТ головного мозга","УЗИ живота","Рентген черепа"],a:1,h:"Быстро показывает наличие крови."},
+{t:"emergency",d:2,q:"Минимальный балл по шкале комы Глазго?",o:["0","1","3","5"],a:2,h:"Даже без реакций сумма не бывает нулевой."},
+{t:"emergency",d:2,q:"Судорожный приступ дольше 5 минут или серия без прояснения сознания?",o:["Аура","Эпилептический статус","Абсанс","Обморок"],a:1,h:"Неотложное состояние в неврологии."},
+{t:"emergency",d:2,q:"Оценка мышечной силы проводится по шкале от 0 до?",o:["3","5","10","100"],a:1,h:"Где максимум — нормальная сила."},
+{t:"emergency",d:2,q:"Что НЕ следует делать во время судорожного приступа?",o:["Убрать опасные предметы","Разжимать челюсти твёрдым предметом","Повернуть на бок","Защитить голову"],a:1,h:"Это может травмировать пациента."},
+{t:"emergency",d:2,q:"Расширение одного зрачка (односторонний мидриаз) может указывать на?",o:["Норму","Сдавление глазодвигательного нерва","Мигрень","Усталость"],a:1,h:"Тревожный признак нарастающего сдавления мозга."},
+{t:"emergency",d:3,q:"Наиболее чувствительный метод к раннему ишемическому очагу?",o:["Обзорная рентгенография","МРТ (диффузионно-взвешенная)","ЭЭГ","ЭМГ"],a:1,h:"Режим DWI показывает ишемию очень рано."},
+{t:"emergency",d:3,q:"Триада Кушинга при повышении внутричерепного давления: брадикардия, нарушение дыхания и?",o:["Гипотония","Артериальная гипертензия","Тахикардия","Лихорадка"],a:1,h:"Давление в сосудах при этом растёт."},
+{t:"emergency",d:3,q:"Симптом Бабинского (разгибание большого пальца стопы) указывает на поражение?",o:["Мозжечка","Пирамидного (кортикоспинального) пути","Периферического нерва","Мышцы"],a:1,h:"Признак поражения центрального мотонейрона."},
+{t:"emergency",d:3,q:"Снижение или отсутствие сухожильных рефлексов характерно для поражения?",o:["Центрального мотонейрона","Периферического мотонейрона","Мозжечка","Коры"],a:1,h:"Периферический = «вялый» паралич."},
+{t:"emergency",d:3,q:"Повышение рефлексов и спастичность характерны для поражения?",o:["Периферического мотонейрона","Центрального мотонейрона","Нервно-мышечного синапса","Мышцы"],a:1,h:"Центральный = «спастический» паралич."},
+{t:"emergency",d:3,q:"Ригидность затылочных мышц в сочетании с лихорадкой и головной болью — заподозрить?",o:["Мигрень","Менингит","Остеохондроз","Синусит"],a:1,h:"Менингеальный симптом раздражения оболочек."},
+{t:"emergency",d:3,q:"Анизокория — это?",o:["Косоглазие","Разный размер зрачков","Дрожание век","Двоение в глазах"],a:1,h:"«Ани» — неравенство зрачков."},
+{t:"emergency",d:3,q:"Повышенное внутричерепное давление на глазном дне проявляется?",o:["Катарактой","Отёком диска зрительного нерва","Глаукомой","Отслойкой сетчатки"],a:1,h:"Застой на диске зрительного нерва."},
+{t:"emergency",d:3,q:"Отсутствие реакции зрачков на свет и стволовых рефлексов — признак?",o:["Лёгкой травмы","Тяжёлого поражения ствола мозга","Мигрени","Невроза"],a:1,h:"Стволовые рефлексы — маркёр глубины поражения."},
+{t:"emergency",d:3,q:"Разгибательная (децеребрационная) поза указывает на поражение на уровне?",o:["Коры","Ствола мозга","Спинного мозга","Периферического нерва"],a:1,h:"Очень тяжёлый прогностический признак."},
+
+/* ---------- дополнение ---------- */
+{t:"disease",d:1,q:"Какое заболевание проявляется приступами односторонней пульсирующей головной боли со светобоязнью?",o:["Мигрень","Артрит","Гастрит","Цистит"],a:0,h:"Часто сопровождается тошнотой и аурой."},
+{t:"disease",d:2,q:"Опоясывающий герпес (лишай) поражает?",o:["Только кожу","Нервные ганглии и кожу по ходу нерва","Только суставы","Только сосуды"],a:1,h:"Высыпания болезненны и идут по ходу нерва."},
+{t:"disease",d:2,q:"Внезапная кратковременная потеря сознания из-за снижения мозгового кровотока?",o:["Кома","Обморок (синкопе)","Ступор","Сопор"],a:1,h:"Обычно проходит самостоятельно за секунды."},
+{t:"disease",d:3,q:"Болезнь Паркинсона относится к группе заболеваний?",o:["Демиелинизирующих","Нейродегенеративных","Инфекционных","Сосудистых"],a:1,h:"Постепенная гибель нейронов."},
+{t:"disease",d:3,q:"Абсанс — это форма?",o:["Мигрени","Эпилептического приступа","Инсульта","Невралгии"],a:1,h:"Кратковременное «замирание» с отключением сознания."},
+{t:"disease",d:3,q:"При рассеянном склерозе в первую очередь разрушается?",o:["Миелиновая оболочка","Костная ткань","Мышечное волокно","Сосудистая стенка"],a:0,h:"Отсюда очаги-бляшки в белом веществе."},
+{t:"emergency",d:1,q:"В какое положение уложить человека без сознания, чтобы избежать аспирации?",o:["На спину","На бок (устойчивое боковое)","На живот","Полусидя"],a:1,h:"Чтобы дыхательные пути оставались свободными."},
+{t:"emergency",d:2,q:"Что оценивает шкала NIHSS?",o:["Функцию печени","Неврологический дефицит при инсульте","Свёртываемость крови","Остроту слуха"],a:1,h:"Специальная инсультная шкала в баллах."},
+{t:"emergency",d:3,q:"Симптом Кернига проверяют путём?",o:["Сгибания шеи вперёд","Разгибания ноги в колене при согнутом бедре","Постукивания по колену","Надавливания на живот"],a:1,h:"Выявляет раздражение мозговых оболочек."},
+{t:"emergency",d:3,q:"Невозможность говорить при сохранном понимании речи после инсульта — это?",o:["Дизартрия","Моторная афазия","Дисфагия","Апраксия"],a:1,h:"Поражение речевого центра Брока."},
+{t:"stroke",d:2,q:"Слабость в руке и ноге с одной стороны тела указывает на поражение?",o:["Обоих полушарий","Противоположного полушария мозга","Всего спинного мозга","Только мозжечка"],a:1,h:"Двигательные пути перекрещиваются."},
+{t:"stroke",d:3,q:"Лакунарный инсульт связан с поражением?",o:["Крупной мозговой артерии","Мелких перфорирующих артерий","Вен мозга","Оболочек мозга"],a:1,h:"Мелкие глубокие очаги в веществе мозга."}
+
+];
+
+// экспорт для игры
+if (typeof window !== "undefined") window.NEURO_Q = NEURO_Q;
+
+</script>
+
+<script>
+const RANKS=["Студент","Интерн","Ординатор","Ординатор II","Врач ⭐","Врач II","Врач высшей кат.","Специалист","Специалист II","Кандидат наук ⭐","Доцент","Доцент II","Профессор","Профессор II","Академик 🏆"];
+const SAFE=[4,9];
+const TOPICS=[["all","Все темы"],["stroke","Инсульт"],["anatomy","Анатомия"],["disease","Заболевания"],["emergency","Неотложка"]];
+
+const Q=(()=>{
+  let deck=[],idx=0,used={f:false,c:false,co:false},locked=false,topic="all";
+  const $=id=>document.getElementById(id);
+  const show=id=>{['start','play','end'].forEach(s=>$(s).classList.add('hidden'));$(id).classList.remove('hidden');};
+  const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+  // ---- best score (мягкий возврат) ----
+  function bestKey(){return "razminka_best_"+topic;}
+  function getBest(){try{return parseInt(localStorage.getItem(bestKey())||"-1");}catch(e){return -1;}}
+  function setBest(v){try{if(v>getBest())localStorage.setItem(bestKey(),v);}catch(e){}}
+  function bestText(){const b=getBest();return b>=0?`Лучший результат: <b>${RANKS[b].replace(/[⭐🏆]/g,'').trim()}</b>`:"Сыграй первый раз — установи рекорд";}
+
+  function renderTopics(){
+    $('topics').innerHTML=TOPICS.map(([k,n])=>`<div class="chip ${k===topic?'on':''}" data-k="${k}">${n}</div>`).join('');
+    [...$('topics').children].forEach(c=>c.onclick=()=>{topic=c.dataset.k;renderTopics();$('bestLine').innerHTML=bestText();});
+    $('bestLine').innerHTML=bestText();
+  }
+
+  function pickDeck(){
+    const pool = topic==="all" ? NEURO_Q : NEURO_Q.filter(x=>x.t===topic);
+    const byD=d=>shuffle(pool.filter(x=>x.d===d));
+    let deck=[...byD(1).slice(0,5),...byD(2).slice(0,5),...byD(3).slice(0,5)];
+    // добор до 15, если в теме не хватило какого-то уровня
+    if(deck.length<15){
+      const have=new Set(deck.map(x=>x.q));
+      for(const x of shuffle(pool)){ if(deck.length>=15)break; if(!have.has(x.q)){deck.push(x);have.add(x.q);} }
+    }
+    return deck.slice(0,15); // порядок: примерно по нарастанию сложности
+  }
+
+  function start(){
+    deck=pickDeck();
+    if(deck.length<15){ // на всякий случай для узких тем
+      alert("В этой теме пока мало вопросов. Выбери «Все темы»."); return;
+    }
+    idx=0;used={f:false,c:false,co:false};locked=false;
+    ['ll5050','llColleague','llConsilium'].forEach(i=>$(i).classList.remove('used'));
+    show('play');renderQ();
+  }
+  function toStart(){renderTopics();show('start');}
+
+  function renderQ(){
+    locked=false;const item=deck[idx];
+    $('qNo').textContent=idx+1;
+    $('rankVal').textContent=RANKS[idx].replace(/[⭐🏆]/g,'').trim();
+    $('qText').textContent=item.q;
+    $('hint').classList.remove('show');$('hint').innerHTML='';
+    $('concard').classList.remove('show');$('concard').innerHTML='';
+    const order=shuffle([0,1,2,3]);const L=['А','Б','В','Г'];
+    $('answers').innerHTML=order.map((oi,pos)=>`<button class="ans" data-oi="${oi}"><span class="badge">${L[pos]}</span><span>${item.o[oi]}</span></button>`).join('');
+    [...$('answers').children].forEach(b=>b.onclick=()=>answer(parseInt(b.dataset.oi),b));
+  }
+
+  function answer(oi){
+    if(locked)return;locked=true;const item=deck[idx];const correct=oi===item.a;
+    [...$('answers').children].forEach(b=>{const boi=parseInt(b.dataset.oi);
+      if(boi===item.a)b.classList.add('good');else if(boi===oi)b.classList.add('bad');b.style.pointerEvents='none';});
+    flash(correct?'✓':'✕',correct?'#22a06b':'#d9453f');
+    setTimeout(()=>{
+      if(correct){idx++;if(idx>=deck.length)endGame(true);else renderQ();}
+      else endGame(false);
+    },correct?850:1350);
+  }
+  function flash(t,c){const f=$('flash');f.textContent=t;f.style.color=c;f.classList.add('show');setTimeout(()=>f.classList.remove('show'),700);}
+
+  function use5050(){if(used.f||locked)return;used.f=true;$('ll5050').classList.add('used');
+    const item=deck[idx];const wrong=[0,1,2,3].filter(i=>i!==item.a);const drop=shuffle(wrong).slice(0,2);
+    [...$('answers').children].forEach(b=>{if(drop.includes(parseInt(b.dataset.oi)))b.classList.add('dim');});}
+  function useColleague(){if(used.c||locked)return;used.c=true;$('llColleague').classList.add('used');
+    $('hint').innerHTML=`<b>Коллега:</b> ${deck[idx].h}`;$('hint').classList.add('show');}
+  function useConsilium(){if(used.co||locked)return;used.co=true;$('llConsilium').classList.add('used');
+    const item=deck[idx];const btns=[...$('answers').children];const pcts=btns.map(()=>0);
+    const cpos=btns.findIndex(b=>parseInt(b.dataset.oi)===item.a);
+    const dim=btns.map(b=>b.classList.contains('dim'));let rem=100;
+    const cp=50+Math.floor(Math.random()*20);pcts[cpos]=cp;rem-=cp;
+    const others=btns.map((_,i)=>i).filter(i=>i!==cpos&&!dim[i]);
+    others.forEach((i,k)=>{const v=k===others.length-1?rem:Math.floor(Math.random()*(rem/1.5));pcts[i]=v;rem-=v;});
+    $('concard').innerHTML=btns.map((b,i)=>{const bd=b.querySelector('.badge').textContent;
+      return `<div class="conbar"><div class="bar"><div class="fill" style="height:${dim[i]?0:pcts[i]}%"></div></div><div class="cl">${bd}</div><div class="pc">${dim[i]?'—':pcts[i]+'%'}</div></div>`;}).join('');
+    $('concard').classList.add('show');}
+
+  function openLadder(){
+    const playing=!$('play').classList.contains('hidden');
+    $('ladder').innerHTML=RANKS.map((r,i)=>{const star=/[⭐🏆]/.test(r);const cur=playing&&idx===i;
+      return `<div class="rung ${cur?'cur':''} ${SAFE.includes(i)?'safe':''}"><span class="n">${i+1}</span><span>${r.replace(/[⭐🏆]/g,'').trim()}</span><span class="star">${star?(r.includes('🏆')?'🏆':'⭐'):''}</span></div>`;}).join('');
+    $('sheet').classList.add('show');}
+  function closeLadder(){$('sheet').classList.remove('show');}
+
+  function endGame(won){
+    let reached;
+    if(won)reached=RANKS.length-1;
+    else{let safe=-1;SAFE.forEach(s=>{if(idx>s)safe=s;});reached=safe;}
+    setBest(reached);
+    if(won){$('endEm').textContent='🏆';$('endTtl').textContent='Поздравляем!';$('endRank').textContent='АКАДЕМИК';$('endSub').textContent='Все 15 вопросов пройдены. Высший результат.';}
+    else if(reached>=0){$('endEm').textContent='🎓';$('endTtl').textContent='Игра окончена';$('endRank').textContent=RANKS[reached].replace(/[⭐🏆]/g,'').trim().toUpperCase();$('endSub').textContent=`Дошёл до вопроса ${idx+1}. Несгораемое звание сохранено.`;}
+    else{$('endEm').textContent='📋';$('endTtl').textContent='Игра окончена';$('endRank').textContent='СТУДЕНТ';$('endSub').textContent=`Дошёл до вопроса ${idx+1}. В следующий раз получится дальше.`;}
+    $('endBest').innerHTML=bestText();
+    show('end');}
+
+  return {start,toStart,use5050,useColleague,useConsilium,openLadder,closeLadder,renderTopics};
+})();
+
+Q.renderTopics();
+</script>
+</body>
+</html>
