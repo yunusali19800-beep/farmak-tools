@@ -26,8 +26,16 @@ exports.handler = async (event) => {
     return json(400, { error: 'bad_json' });
   }
 
-  const { action, key, value, prefix } = body || {};
-  const store = getStore('nevro-quiz-storage');
+const { action, key, value, prefix } = body || {};
+
+  const siteID = process.env.BLOBS_SITE_ID;
+  const token = process.env.BLOBS_API_TOKEN;
+
+  const storeOpts = siteID && token
+    ? { name: 'nevro-quiz-storage', siteID, token }
+    : 'nevro-quiz-storage';
+
+  const store = getStore(storeOpts);
 
   try {
     if (action === 'get') {
