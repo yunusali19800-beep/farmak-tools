@@ -1,7 +1,7 @@
-// Совместимая замена window.storage (Claude Artifacts API) → Netlify Function + Netlify Blobs.
+// Совместимая замена window.storage (Claude Artifacts API) → Cloudflare Worker + D1.
 // Контракт методов сохранён 1:1, поэтому логика App.jsx не тронута ни строкой.
 
-const KV_ENDPOINT = '/.netlify/functions/kv';
+const KV_ENDPOINT = '/api/kv';
 
 async function kvCall(action, params = {}) {
   const res = await fetch(KV_ENDPOINT, {

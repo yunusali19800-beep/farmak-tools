@@ -1,12 +1,12 @@
+# Netlify больше не хостит инструменты: сайт переехал на Cloudflare.
+# Этот файл оставляет farmak-tools.netlify.app живым как переадресацию,
+# чтобы напечатанные QR-коды продолжали открываться. Путь и параметры сохраняются.
 [build]
-  command = "npm install"
-  publish = "."
-  functions = "netlify/functions"
+  command = "echo redirect-only"
+  publish = "public"
 
-[build.environment]
-  NODE_VERSION = "20"
-
-[[headers]]
-  for = "/assets/shtab-app.js"
-  [headers.values]
-    Cache-Control = "public, max-age=300"
+[[redirects]]
+  from = "/*"
+  to = "https://farmak-tools.farmak-nevro.workers.dev/:splat"
+  status = 308
+  force = true

@@ -1,0 +1,16 @@
+{
+  "name": "farmak-tools",
+  "main": "worker/index.js",
+  "compatibility_date": "2025-10-01",
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "html_handling": "none",
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*", "/"]
+  },
+  // База D1 создаётся при первой выкладке сама (автосоздание ресурсов в wrangler 4).
+  // Таблицы создаёт сам сервер при первом запросе.
+  "d1_databases": [{ "binding": "DB", "database_name": "farmak-tools" }]
+}
